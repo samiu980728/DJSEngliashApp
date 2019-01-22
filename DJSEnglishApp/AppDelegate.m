@@ -21,10 +21,9 @@
     self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
     self.window.backgroundColor = [UIColor whiteColor];
     [self.window makeKeyAndVisible];
-    NSMutableArray * viewControllerArray = [[NSMutableArray alloc] init];
     DJSDailyyPushhViewController * dailyPushController = [[DJSDailyyPushhViewController alloc] init];
-    [viewControllerArray addObject:dailyPushController];
-    self.window.rootViewController = dailyPushController;
+    UINavigationController * navController = [[UINavigationController alloc] initWithRootViewController:dailyPushController];
+    self.window.rootViewController = navController;
     return YES;
 }
 
