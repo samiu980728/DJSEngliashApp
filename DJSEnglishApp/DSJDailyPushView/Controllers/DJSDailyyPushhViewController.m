@@ -7,7 +7,8 @@
 //
 
 #import "DJSDailyyPushhViewController.h"
-
+#import "DJSSearchYourCollectionMessageView.h"
+#import "DJSEnglishCardImageView.h"
 @interface DJSDailyyPushhViewController ()
 
 @end
@@ -18,28 +19,83 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
+//    NSShadow * shadow = [[NSShadow alloc] init];
+//    shadow.shadowBlurRadius = 5;//模糊度
+//    shadow.shadowColor = [UIColor blackColor];
+//    shadow.shadowOffset = CGSizeMake(2, 6);
+    //绘制文本
+//    NSDictionary * dict = @{NSFontAttributeName : [UIFont systemFontOfSize:20],NSForegroundColorAttributeName:[UIColor darkTextColor],NSShadowAttributeName:shadow,NSVerticalGlyphFormAttributeName:@(0)};
+//    [self.title drawInRect:self.navigationController.navigationBar.bounds withAttributes:dict];
+    
     self.title = @"美文欣赏";
+    [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"4.jpeg"] forBarMetrics:UIBarMetricsDefault];
+    [self.navigationController.navigationBar setTitleTextAttributes:@{NSFontAttributeName:[UIFont systemFontOfSize:20],NSForegroundColorAttributeName:[UIColor darkTextColor]}];
     self.view.backgroundColor = [UIColor yellowColor];
     _dataMessageList = [NSMutableArray arrayWithObjects:@"1",@"11",@"2",@"22",@"#",@"3",@"33",@"4",@"44",@"ff",@"a",@"aaa",@"555",@"666",nil];
     _searchController = [[UISearchController alloc] initWithSearchResultsController:nil];
     [self searchControllerLayout];
+    [self addImageView];
+}
+
+- (void)addImageView
+{
+   // DJSEnglishCardImageView * cardMainImageView = [[DJSEnglishCardImageView alloc] init];
+    DJSEnglishCardImageView * cardMainImageView = [[DJSEnglishCardImageView alloc] initWithFrame:CGRectMake(150, 150, 150, 150)];
+    [self.scrollView addSubview:cardMainImageView];
+//    [cardMainImageView mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.left.mas_equalTo(self.view.mas_left).offset(90);
+//        make.right.mas_equalTo(self.view.mas_right).offset(-90);
+//        make.top.mas_equalTo(self.view.mas_top).offset(100);
+//        make.height.mas_equalTo(200);
+//    }];
+}
+
+- (void)setScrollViewAndMasonryByContrainView
+{
+    //这里面的mainTableView 就相当于那个demo里的contrainView
+    UIView * bottomView = [[UIView alloc] init];
+    bottomView.backgroundColor = [UIColor blueColor];
 }
 
 - (void)searchControllerLayout
 {
+    _scrollView = [[UIScrollView alloc] init];
+    self.scrollView.contentSize = CGSizeMake(0, 1800);
+    self.scrollView.delegate = self;
+    self.scrollView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"3.jpeg"]];
+    [self.view addSubview:self.scrollView];
+    [self.scrollView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.equalTo(self.view);
+    }];
+
+#pragma mark:set up mainTableView
     self.mainTableView = [[UITableView alloc] init];
     self.mainTableView.delegate = self;
     self.mainTableView.dataSource = self;
-    self.mainTableView.backgroundColor = [UIColor whiteColor];
+    self.mainTableView.backgroundColor = [UIColor clearColor];
+#pragma mark explain: actually it is what you like to set value to mainTableView's backgroundColor or scrollView's backgroundColor,because mainTableView is on the scrollView ,when you do not search anything ,the mainTableView's surface have not anything on it ,so whether you like, there are same means.
+    //self.mainTableView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"3.jpeg"]];
     self.mainTableView.separatorStyle = UITableViewCellEditingStyleNone;
-//    self.mainTableView.frame = CGRectMake(0, 0, 300, 44)
-    [self.view addSubview:self.mainTableView];
+    
+    [self.scrollView addSubview:self.mainTableView];
+    //[self.view addSubview:self.mainTableView];
+    
+    
+    
+    
+    
+#pragma Request: 1.24
+    //在这里分两种情况讨论mainTableView的高度 因为出现了这个bug: 下拉时只有当把tableView所占的高度拉完时，此时图层上才会显示最外层是scrollView,再次下拉时 在scrollView上面的图片才会随着下拉而滑动！
+    //第一种是如果 !searchController.active  那么高度设置为44 = 搜索栏的高度
+    //如果 searchController.active 那么高度设置为 make.edges.equalTo(self.view)
+    
+    
+    
     [self.mainTableView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.equalTo(self.view);
     }];
-    
+#pragma mark:set up searchController
     _searchController = [[UISearchController alloc] initWithSearchResultsController:nil];
-//    _searchController.view.backgroundColor = [UIColor yellowColor];
     _searchController.searchBar.placeholder = @"请输入美文所包含单词";
     _searchController.searchResultsUpdater = self;
     //使其背景暗淡 当陈述时  ||  当搜索框激活时, 是否添加一个透明视图
@@ -48,23 +104,20 @@
     _searchController.hidesNavigationBarDuringPresentation = YES;
 //    这行代码是声明，哪个viewcontroller显示UISearchController
     self.definesPresentationContext = YES;
-    
     _searchController.searchBar.frame = CGRectMake(self.searchController.searchBar.frame.origin.x, self.searchController.searchBar.frame.origin.y, self.searchController.searchBar.frame.size.width, 44.0);
-    
     //改变系统自带 cancel 为取消
     [self.searchController.searchBar setValue:@"取消" forKey:@"_cancelButtonText"];
     //表头视图为searchController的searchBar
     self.mainTableView.tableHeaderView = self.searchController.searchBar;
     
-#pragma mark 下面这样为什么不行？？？
+#pragma mark  Request: why not work out?
 //    [self.searchController.searchBar mas_makeConstraints:^(MASConstraintMaker *make) {
 //        make.left.equalTo(self.view.mas_left);
 //        make.right.equalTo(self.view.mas_right).offset(-100);
 //        make.top.equalTo(self.view.mas_top).mas_offset(50);
 //        make.height.mas_equalTo(100);
 //    }];
-    
-    //[[self.searchController.searchBar.subviews objectAtIndex:0] removeFromSuperview];
+#pragma mark:取消搜索框自带灰色背景
     for (UIView * subView in self.searchController.searchBar.subviews) {
         for (UIView * grandView in subView.subviews) {
             if ([grandView isKindOfClass:NSClassFromString(@"UISearchBarBackground")]) {
@@ -76,6 +129,7 @@
             }
         }
     }
+#pragma mark:设置搜索框为圆角，改变搜索框背景颜色
     UITextField * searchFiled = [self.searchController.searchBar valueForKey:@"searchField"];
     if (searchFiled) {
         //R:78 G:187 B:183
@@ -84,9 +138,6 @@
         searchFiled.layer.borderColor = (__bridge CGColorRef _Nullable)([UIColor yellowColor]);
         searchFiled.layer.borderWidth = 1;
         searchFiled.layer.masksToBounds = YES;
-    }
-    if (!self.searchController.active) {
-        NSLog(@"处于不活跃状态");
     }
 }
 
@@ -210,7 +261,7 @@
 }
 
 
-#pragma mark
+#pragma mark Request:
 //明天：搜索框定位准确 解决搜索框占满整个屏幕的问题
 //明天：可触控 拿到接口 做双击单词翻译这个功能
 

@@ -15,4 +15,5 @@
 @property (nonatomic, strong) UITextView * searchTextView;
 
 @property (nonatomic, strong) UIButton * cancelButton;
+
 @end

@@ -8,10 +8,10 @@
 
 #import <UIKit/UIKit.h>
 #import <Masonry.h>
-#import "DJSSearchYourCollectionMessageView.h"
+@class DJSSearchYourCollectionMessageView;
+@class DJSEnglishCardImageView;
 @interface DJSDailyyPushhViewController : UIViewController
-<UITableViewDelegate,UITableViewDataSource,UISearchBarDelegate,UISearchResultsUpdating>
-
+<UITableViewDelegate,UITableViewDataSource,UISearchBarDelegate,UISearchResultsUpdating,UIScrollViewDelegate>
 @property (nonatomic, strong) UITableView * mainTableView;
 
 @property (nonatomic, strong) UISearchController * searchController;
@@ -20,4 +20,5 @@
 
 @property (nonatomic, strong) NSMutableArray * searchMessageList;
 
+@property (nonatomic, strong) UIScrollView * scrollView;
 @end
