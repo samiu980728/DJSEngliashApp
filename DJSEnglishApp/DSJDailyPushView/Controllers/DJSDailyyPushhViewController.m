@@ -19,14 +19,6 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
-//    NSShadow * shadow = [[NSShadow alloc] init];
-//    shadow.shadowBlurRadius = 5;//模糊度
-//    shadow.shadowColor = [UIColor blackColor];
-//    shadow.shadowOffset = CGSizeMake(2, 6);
-    //绘制文本
-//    NSDictionary * dict = @{NSFontAttributeName : [UIFont systemFontOfSize:20],NSForegroundColorAttributeName:[UIColor darkTextColor],NSShadowAttributeName:shadow,NSVerticalGlyphFormAttributeName:@(0)};
-//    [self.title drawInRect:self.navigationController.navigationBar.bounds withAttributes:dict];
-    
     self.title = @"美文欣赏";
     [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"4.jpeg"] forBarMetrics:UIBarMetricsDefault];
     [self.navigationController.navigationBar setTitleTextAttributes:@{NSFontAttributeName:[UIFont systemFontOfSize:20],NSForegroundColorAttributeName:[UIColor darkTextColor]}];
@@ -35,13 +27,16 @@
     _searchController = [[UISearchController alloc] initWithSearchResultsController:nil];
     [self searchControllerLayout];
     [self addImageView];
+    _cancelButtonIfSelected = NO;
 }
 
 - (void)addImageView
 {
    // DJSEnglishCardImageView * cardMainImageView = [[DJSEnglishCardImageView alloc] init];
-    DJSEnglishCardImageView * cardMainImageView = [[DJSEnglishCardImageView alloc] initWithFrame:CGRectMake(150, 150, 150, 150)];
-    [self.scrollView addSubview:cardMainImageView];
+    _englishCardImageView = [[DJSEnglishCardImageView alloc] initWithFrame:CGRectMake(150, 150, 150, 150)];
+    [self.scrollView addSubview:_englishCardImageView];
+//    DJSEnglishCardImageView * cardMainImageView = [[DJSEnglishCardImageView alloc] initWithFrame:CGRectMake(150, 150, 150, 150)];
+//    [self.scrollView addSubview:cardMainImageView];
 //    [cardMainImageView mas_makeConstraints:^(MASConstraintMaker *make) {
 //        make.left.mas_equalTo(self.view.mas_left).offset(90);
 //        make.right.mas_equalTo(self.view.mas_right).offset(-90);
@@ -55,6 +50,16 @@
     //这里面的mainTableView 就相当于那个demo里的contrainView
     UIView * bottomView = [[UIView alloc] init];
     bottomView.backgroundColor = [UIColor blueColor];
+}
+
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
+{
+    self.englishCardImageView.alpha = 0.5;
+}
+
+- (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset
+{
+    self.englishCardImageView.alpha = 1.0;
 }
 
 - (void)searchControllerLayout
@@ -80,24 +85,16 @@
     [self.scrollView addSubview:self.mainTableView];
     //[self.view addSubview:self.mainTableView];
     
-    
-    
-    
-    
-#pragma Request: 1.24
-    //在这里分两种情况讨论mainTableView的高度 因为出现了这个bug: 下拉时只有当把tableView所占的高度拉完时，此时图层上才会显示最外层是scrollView,再次下拉时 在scrollView上面的图片才会随着下拉而滑动！
-    //第一种是如果 !searchController.active  那么高度设置为44 = 搜索栏的高度
-    //如果 searchController.active 那么高度设置为 make.edges.equalTo(self.view)
-    
-    
-    
     [self.mainTableView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.equalTo(self.view);
+        make.left.and.right.mas_equalTo(self.view);
+        make.height.mas_equalTo(50);
+        make.top.mas_equalTo(self.view.mas_top);
     }];
 #pragma mark:set up searchController
     _searchController = [[UISearchController alloc] initWithSearchResultsController:nil];
     _searchController.searchBar.placeholder = @"请输入美文所包含单词";
     _searchController.searchResultsUpdater = self;
+    _searchController.searchBar.delegate = self;
     //使其背景暗淡 当陈述时  ||  当搜索框激活时, 是否添加一个透明视图
     _searchController.dimsBackgroundDuringPresentation = NO;
     // 当搜索框激活时, 是否隐藏导航条
@@ -141,6 +138,11 @@
     }
 }
 
+- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
+{
+    _cancelButtonIfSelected = YES;
+}
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     static NSString * identifier = @"cellFlag";
@@ -158,14 +160,21 @@
 
 - (void)updateSearchResultsForSearchController:(UISearchController *)searchController
 {
-//    _searchController.searchBar.frame = CGRectMake(self.searchController.searchBar.frame.origin.x, self.searchController.searchBar.frame.origin.y, self.searchController.searchBar.frame.size.width, 44.0);
-//        [self.searchController.searchBar mas_makeConstraints:^(MASConstraintMaker *make) {
-//            make.left.equalTo(self.view.mas_left);
-//            make.right.equalTo(self.view.mas_right).offset(-100);
-//            make.top.equalTo(self.view.mas_top).mas_offset(20);
-//            make.height.mas_equalTo(100);
-//        }];
-    
+    //重新设置高度
+    [self.mainTableView mas_remakeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(self.view.mas_top);
+        make.bottom.mas_equalTo(self.view.mas_bottom);
+        make.width.mas_equalTo(self.view.mas_width);
+#pragma request: 还需要设置 tableView 的 backgroundColor 非clearColor!!!
+    }];
+    if (_cancelButtonIfSelected) {
+        [self.mainTableView mas_remakeConstraints:^(MASConstraintMaker *make) {
+            make.top.mas_equalTo(self.view.mas_top);
+            make.width.mas_equalTo(self.view.mas_width);
+            make.height.mas_equalTo(50);
+        }];
+    }
+    _cancelButtonIfSelected = NO;
     //用户输入到搜索栏中的文字
     NSString * searchString = [self.searchController.searchBar text];
     NSPredicate * predicate = [NSPredicate predicateWithFormat:@"SELF CONTAINS[c] %@",searchString];
