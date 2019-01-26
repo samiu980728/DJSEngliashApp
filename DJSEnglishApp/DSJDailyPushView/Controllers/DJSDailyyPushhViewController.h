@@ -30,6 +30,18 @@
 ///判断取消键是否被选中
 @property (nonatomic, assign) BOOL cancelButtonIfSelected;
 
-///阅读卡片
+///阅读卡片 主要
 @property (nonatomic, strong) DJSEnglishCardImageView * englishCardImageView;
+
+///阅读卡片 左侧
+@property (nonatomic, strong) DJSEnglishCardImageView * englishLeftCardImageView;
+
+///阅读卡片 右侧
+@property (nonatomic, strong) DJSEnglishCardImageView * englishRightCardImageView;
+
+///scrollView外部的包裹view 负责再上面添加各种需要的控件，用于Masonory布局
+@property (nonatomic, strong) UIView * contrainView;
+
+///按下取消按钮时不去执行srollViewdidScroll
+@property (nonatomic, assign) BOOL cancelButtonNotAllowSrollViewdidScroll;
 @end

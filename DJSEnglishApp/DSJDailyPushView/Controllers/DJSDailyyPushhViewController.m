@@ -26,20 +26,34 @@
     _dataMessageList = [NSMutableArray arrayWithObjects:@"1",@"11",@"2",@"22",@"#",@"3",@"33",@"4",@"44",@"ff",@"a",@"aaa",@"555",@"666",nil];
     _searchController = [[UISearchController alloc] initWithSearchResultsController:nil];
     [self searchControllerLayout];
+//    [self searchControllerLayoutSubViews];
     [self addImageView];
     _cancelButtonIfSelected = NO;
+    _cancelButtonNotAllowSrollViewdidScroll = NO;
 }
 
 - (void)addImageView
 {
-   // DJSEnglishCardImageView * cardMainImageView = [[DJSEnglishCardImageView alloc] init];
-    _englishCardImageView = [[DJSEnglishCardImageView alloc] initWithFrame:CGRectMake(150, 150, 150, 150)];
-    [self.scrollView addSubview:_englishCardImageView];
-//    DJSEnglishCardImageView * cardMainImageView = [[DJSEnglishCardImageView alloc] initWithFrame:CGRectMake(150, 150, 150, 150)];
-//    [self.scrollView addSubview:cardMainImageView];
-//    [cardMainImageView mas_makeConstraints:^(MASConstraintMaker *make) {
+    self.englishLeftCardImageView = [[DJSEnglishCardImageView alloc] initWithFrame:CGRectMake(10, 170, 214, 260)];
+    [self.englishLeftCardImageView setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"6.jpg"]]];
+    self.englishLeftCardImageView.userInteractionEnabled = YES;
+    
+    [self.scrollView addSubview:self.englishLeftCardImageView];
+    
+    self.englishRightCardImageView = [[DJSEnglishCardImageView alloc] initWithFrame:CGRectMake(190, 170, 214, 260)];
+    [self.englishRightCardImageView setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"7.jpg"]]];
+    self.englishRightCardImageView.userInteractionEnabled = YES;
+    [self.scrollView addSubview:self.englishRightCardImageView];
+    
+    self.englishCardImageView = [[DJSEnglishCardImageView alloc] initWithFrame:CGRectMake(100, 150, 214, 300)];
+    [self.englishCardImageView setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"5.jpeg"]]];
+    self.englishCardImageView.userInteractionEnabled = YES;
+    [self.scrollView addSubview:self.englishCardImageView];
+//    _englishCardImageView = [[DJSEnglishCardImageView alloc] init];
+//    [self.scrollView addSubview:_englishCardImageView];
+//    [_englishCardImageView mas_makeConstraints:^(MASConstraintMaker *make) {
 //        make.left.mas_equalTo(self.view.mas_left).offset(90);
-//        make.right.mas_equalTo(self.view.mas_right).offset(-90);
+//        make.right.mas_equalTo(self.view.mas_right);
 //        make.top.mas_equalTo(self.view.mas_top).offset(100);
 //        make.height.mas_equalTo(200);
 //    }];
@@ -48,6 +62,9 @@
 - (void)setScrollViewAndMasonryByContrainView
 {
     //这里面的mainTableView 就相当于那个demo里的contrainView
+    //错了 当不点击搜索时 mainTableView 的尺寸时很小的
+    //所以还得创建一个 contrainView 来包裹上面的其他view
+    //这些view 包括： bottomView,_englishCardImageView 等
     UIView * bottomView = [[UIView alloc] init];
     bottomView.backgroundColor = [UIColor blueColor];
 }
@@ -55,11 +72,80 @@
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
 {
     self.englishCardImageView.alpha = 0.5;
+    self.englishLeftCardImageView.alpha = 0.5;
+    self.englishRightCardImageView.alpha = 0.5;
 }
 
 - (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset
 {
-    self.englishCardImageView.alpha = 1.0;
+    float orginScrollViewY = self.scrollView.contentOffset.y;
+    if (orginScrollViewY > 100) {
+        //self.navigationController.navigationBar.hidden = YES;
+        _searchController.hidesNavigationBarDuringPresentation = NO;
+        self.englishCardImageView.alpha = 0.5;
+        self.englishLeftCardImageView.alpha = 0.5;
+        self.englishRightCardImageView.alpha = 0.5;
+        self.mainTableView.tableHeaderView = nil;
+        UIBarButtonItem * searchBarButton = [[UIBarButtonItem alloc] initWithCustomView:_searchController.searchBar];
+        self.navigationItem.rightBarButtonItem = searchBarButton;
+    } else {
+        _searchController.hidesNavigationBarDuringPresentation = YES;
+        self.navigationItem.rightBarButtonItem = nil;
+        self.mainTableView.tableHeaderView = _searchController.searchBar;
+        self.navigationController.navigationBar.hidden = NO;
+        self.englishCardImageView.alpha = 1.0;
+        self.englishLeftCardImageView.alpha = 1.0;
+        self.englishRightCardImageView.alpha = 1.0;
+    }
+}
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView
+{
+    //隐藏导航栏
+    float orginY = self.englishCardImageView.frame.origin.y;
+    float orginScrollViewY = self.scrollView.contentOffset.y;
+    NSLog(@"orginScrollViewY = %f",orginScrollViewY);
+#pragma mark Request: when englishCardImageView's orgin y is less than 60 ,searchBar must move to the top of the view and replace the nagivationBar
+//    int ifZeroOriginY = orginScrollViewY;
+//    if (ifZeroOriginY != 0) {
+    
+    if (orginScrollViewY > 100) {
+#pragma mark Request: let searchBar move to the nagiavationBar as a rightBarButtonItem, meanwhile let the mainTableView's tableHeaderView disappear
+        self.mainTableView.tableHeaderView = nil;
+        UIBarButtonItem * searchBarButton = [[UIBarButtonItem alloc] initWithCustomView:_searchController.searchBar];
+        self.navigationItem.rightBarButtonItem = searchBarButton;
+        
+        //self.navigationController.navigationBar.hidden = YES;
+        //当搜索框被激活时，不必在隐藏导航栏 因为现在搜索框在导航栏上
+        _searchController.hidesNavigationBarDuringPresentation = NO;
+        self.englishCardImageView.alpha = 0.5;
+        self.englishLeftCardImageView.alpha = 0.5;
+        self.englishRightCardImageView.alpha = 0.5;
+        [self.mainTableView mas_remakeConstraints:^(MASConstraintMaker *make) {
+            make.width.mas_equalTo(self.view.mas_width);
+            make.height.mas_equalTo(50);
+            make.top.mas_equalTo(self.view.mas_top);
+        }];
+    } else{
+        #pragma mark question： 搜索框无故消失 是这四个之中的问题
+        self.navigationItem.rightBarButtonItem = nil;
+        if (!self.mainTableView.tableHeaderView) {
+        self.mainTableView.tableHeaderView = _searchController.searchBar;
+        }
+        self.navigationController.navigationBar.hidden = NO;
+        _searchController.hidesNavigationBarDuringPresentation = YES;
+
+        self.englishCardImageView.alpha = 1.0;
+        self.englishLeftCardImageView.alpha = 1.0;
+        self.englishRightCardImageView.alpha = 1.0;
+        [self.mainTableView mas_remakeConstraints:^(MASConstraintMaker *make) {
+            make.width.mas_equalTo(self.view.mas_width);
+            make.height.mas_equalTo(50);
+            make.top.mas_equalTo(self.view.mas_top);
+        }];
+    }
+    
+//    }
 }
 
 - (void)searchControllerLayout
@@ -78,6 +164,7 @@
     self.mainTableView.delegate = self;
     self.mainTableView.dataSource = self;
     self.mainTableView.backgroundColor = [UIColor clearColor];
+    
 #pragma mark explain: actually it is what you like to set value to mainTableView's backgroundColor or scrollView's backgroundColor,because mainTableView is on the scrollView ,when you do not search anything ,the mainTableView's surface have not anything on it ,so whether you like, there are same means.
     //self.mainTableView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"3.jpeg"]];
     self.mainTableView.separatorStyle = UITableViewCellEditingStyleNone;
@@ -90,6 +177,7 @@
         make.height.mas_equalTo(50);
         make.top.mas_equalTo(self.view.mas_top);
     }];
+    
 #pragma mark:set up searchController
     _searchController = [[UISearchController alloc] initWithSearchResultsController:nil];
     _searchController.searchBar.placeholder = @"请输入美文所包含单词";
@@ -114,7 +202,8 @@
 //        make.top.equalTo(self.view.mas_top).mas_offset(50);
 //        make.height.mas_equalTo(100);
 //    }];
-#pragma mark:取消搜索框自带灰色背景
+   
+#pragma mark:cancel the searchBar's grayColor backGround
     for (UIView * subView in self.searchController.searchBar.subviews) {
         for (UIView * grandView in subView.subviews) {
             if ([grandView isKindOfClass:NSClassFromString(@"UISearchBarBackground")]) {
@@ -140,6 +229,10 @@
 
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
 {
+//    self.navigationItem.rightBarButtonItem = nil;
+//    self.mainTableView.tableHeaderView = _searchController.searchBar;
+//    self.navigationController.navigationBar.hidden = NO;
+//    _searchController.hidesNavigationBarDuringPresentation = YES;
     _cancelButtonIfSelected = YES;
 }
 
@@ -173,6 +266,9 @@
             make.width.mas_equalTo(self.view.mas_width);
             make.height.mas_equalTo(50);
         }];
+        NSLog(@"self.mainTableView.tableHeaderView = %@",self.mainTableView.tableHeaderView);
+        NSLog(@"self.searchController.searchBar.placeholder = %@",self.searchController.searchBar.placeholder);
+        self.mainTableView.tableHeaderView.hidden = NO;
     }
     _cancelButtonIfSelected = NO;
     //用户输入到搜索栏中的文字
@@ -190,7 +286,6 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     if (self.searchController.active) {
-//        NSUInteger x = _searchMessageList.count;
         return _searchMessageList.count;
     } else {
         return 0;
@@ -207,7 +302,6 @@
     if (self.searchController.active) {
         NSLog(@"search中的 %@被选中",_searchMessageList[indexPath.row]);
         DJSSearchYourCollectionMessageView * searchCollectionView = [[DJSSearchYourCollectionMessageView alloc] init];
-        
         //设置动画类型
         NSString * subTypeString;
         subTypeString = @"kCATransitionFromLeft";
@@ -239,7 +333,6 @@
     }
     //设置运动速度
     animation.timingFunction = UIViewAnimationOptionCurveEaseInOut;
-    
     [view.layer addAnimation:animation forKey:@"animation"];
 }
 
@@ -269,6 +362,95 @@
     // Dispose of any resources that can be recreated.
 }
 
+
+//使用contrainView作为中间层布局scorllView始终失败
+- (void)searchControllerLayoutSubViews
+{
+    _scrollView = [[UIScrollView alloc] init];
+    //self.scrollView.contentSize = CGSizeMake(0, 1800);
+    self.scrollView.delegate = self;
+    self.scrollView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"3.jpeg"]];
+    [self.view addSubview:self.scrollView];
+    [self.scrollView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.equalTo(self.view);
+    }];
+    
+#pragma mark Request: set up contrainView who prefers to cover englishCardView & bottomView & ....
+    self.contrainView = [[UIView alloc] init];
+    [self.scrollView addSubview:self.contrainView];
+    [self.contrainView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.equalTo(self.scrollView);
+        make.width.equalTo(self.scrollView);
+    }];
+    
+#pragma mark:set up mainTableView
+    self.mainTableView = [[UITableView alloc] init];
+    self.mainTableView.delegate = self;
+    self.mainTableView.dataSource = self;
+    self.mainTableView.backgroundColor = [UIColor clearColor];
+    self.mainTableView.separatorStyle = UITableViewCellEditingStyleNone;
+    //    [self.scrollView addSubview:self.mainTableView];
+    [self.contrainView addSubview:self.mainTableView];
+    [self.mainTableView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.and.right.mas_equalTo(self.contrainView);
+        make.height.mas_equalTo(50);
+        make.top.mas_equalTo(self.view.mas_top);
+    }];
+    
+#pragma mark: set up bottomView
+    UILabel * bottomView = [[UILabel alloc] init];
+    bottomView.backgroundColor = [UIColor yellowColor];
+    [self.contrainView addSubview:bottomView];
+    [bottomView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.and.right.equalTo(self.contrainView);
+        make.height.mas_equalTo(60);
+        make.top.mas_equalTo(self.mainTableView.mas_bottom).offset(900);
+    }];
+    [self.contrainView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.bottom.mas_equalTo(bottomView.mas_bottom);
+    }];
+    
+    NSLog(@"self.contrainView.bounds.size.height = %f self.contrainView.bounds.size.width = %f",self.contrainView.bounds.size.height,self.contrainView.bounds.size.width);
+#pragma mark:set up searchController
+    _searchController = [[UISearchController alloc] initWithSearchResultsController:nil];
+    _searchController.searchBar.placeholder = @"请输入美文所包含单词";
+    _searchController.searchResultsUpdater = self;
+    _searchController.searchBar.delegate = self;
+    //使其背景暗淡 当陈述时  ||  当搜索框激活时, 是否添加一个透明视图
+    _searchController.dimsBackgroundDuringPresentation = NO;
+    // 当搜索框激活时, 是否隐藏导航条
+    _searchController.hidesNavigationBarDuringPresentation = YES;
+    //    这行代码是声明，哪个viewcontroller显示UISearchController
+    self.definesPresentationContext = YES;
+    _searchController.searchBar.frame = CGRectMake(self.searchController.searchBar.frame.origin.x, self.searchController.searchBar.frame.origin.y, self.searchController.searchBar.frame.size.width, 44.0);
+    //改变系统自带 cancel 为取消
+    [self.searchController.searchBar setValue:@"取消" forKey:@"_cancelButtonText"];
+    //表头视图为searchController的searchBar
+    self.mainTableView.tableHeaderView = self.searchController.searchBar;
+    
+#pragma mark:取消搜索框自带灰色背景
+    for (UIView * subView in self.searchController.searchBar.subviews) {
+        for (UIView * grandView in subView.subviews) {
+            if ([grandView isKindOfClass:NSClassFromString(@"UISearchBarBackground")]) {
+                grandView.alpha = 0.0f;
+            } else if ([grandView isKindOfClass:NSClassFromString(@"UISearchBarTextField")]) {
+                NSLog(@"Keep textfiedld bkg color");
+            } else {
+                grandView.alpha = 0.0f;
+            }
+        }
+    }
+#pragma mark:设置搜索框为圆角，改变搜索框背景颜色
+    UITextField * searchFiled = [self.searchController.searchBar valueForKey:@"searchField"];
+    if (searchFiled) {
+        //R:78 G:187 B:183
+        [searchFiled setBackgroundColor:[UIColor colorWithRed:78 green:187 blue:183 alpha:1]];
+        searchFiled.layer.cornerRadius = 14.0f;
+        searchFiled.layer.borderColor = (__bridge CGColorRef _Nullable)([UIColor yellowColor]);
+        searchFiled.layer.borderWidth = 1;
+        searchFiled.layer.masksToBounds = YES;
+    }
+}
 
 #pragma mark Request:
 //明天：搜索框定位准确 解决搜索框占满整个屏幕的问题
