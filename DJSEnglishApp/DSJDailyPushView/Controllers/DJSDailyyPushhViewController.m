@@ -27,26 +27,37 @@
     _searchController = [[UISearchController alloc] initWithSearchResultsController:nil];
     [self searchControllerLayout];
 //    [self searchControllerLayoutSubViews];
-    [self addImageView];
+//    [self addImageView];
     _cancelButtonIfSelected = NO;
     _cancelButtonNotAllowSrollViewdidScroll = NO;
+    self.currentIndex = 0;
+    self.currentLeftIndex = 0;
+    self.currentRightIndex = 0;
 }
 
 - (void)addImageView
 {
     self.englishLeftCardImageView = [[DJSEnglishCardImageView alloc] initWithFrame:CGRectMake(10, 170, 214, 260)];
-    [self.englishLeftCardImageView setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"6.jpg"]]];
+    self.englishLeftCardImageView.image = [UIImage imageNamed:@"6.jpg"];
+    self.englishLeftCardImageView.contentMode = UIViewContentModeScaleAspectFill;
+//    [self.englishLeftCardImageView setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"6.jpg"]]];
     self.englishLeftCardImageView.userInteractionEnabled = YES;
-    
+
     [self.scrollView addSubview:self.englishLeftCardImageView];
     
     self.englishRightCardImageView = [[DJSEnglishCardImageView alloc] initWithFrame:CGRectMake(190, 170, 214, 260)];
-    [self.englishRightCardImageView setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"7.jpg"]]];
+    self.englishRightCardImageView.image = [UIImage imageNamed:@"7.jpg"];
+    self.englishRightCardImageView.contentMode = UIViewContentModeScaleAspectFill;
+    //[self.englishRightCardImageView setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"7.jpg"]]];
     self.englishRightCardImageView.userInteractionEnabled = YES;
     [self.scrollView addSubview:self.englishRightCardImageView];
     
     self.englishCardImageView = [[DJSEnglishCardImageView alloc] initWithFrame:CGRectMake(100, 150, 214, 300)];
-    [self.englishCardImageView setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"5.jpeg"]]];
+    self.englishCardImageView.contentMode = UIViewContentModeScaleAspectFill;
+    self.englishCardImageView.image = [UIImage imageNamed:@"5.jpeg"];
+    [self getLeftGestureRecognizeIimageView:self.englishCardImageView];
+    [self getRightGestureRecognizeIimageView:self.englishCardImageView];
+    //[self.englishCardImageView setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"5.jpeg"]]];
     self.englishCardImageView.userInteractionEnabled = YES;
     [self.scrollView addSubview:self.englishCardImageView];
 //    _englishCardImageView = [[DJSEnglishCardImageView alloc] init];
@@ -57,6 +68,95 @@
 //        make.top.mas_equalTo(self.view.mas_top).offset(100);
 //        make.height.mas_equalTo(200);
 //    }];
+}
+
+//生成左手势
+- (void)getLeftGestureRecognizeIimageView:(UIImageView *)englishCardImageView
+{
+    UISwipeGestureRecognizer * leftGesture = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(leftAction:)];
+    //默认属性direction(方向)只有向右滑动    所以要为左滑动更改下属性  向右是默认 可以不改
+    leftGesture.direction = UISwipeGestureRecognizerDirectionLeft;
+    [englishCardImageView addGestureRecognizer:leftGesture];
+}
+
+//生成右手势
+- (void)getRightGestureRecognizeIimageView:(UIImageView *)englishCardImageView
+{
+    UISwipeGestureRecognizer * rightGesture = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(rightAction:)];
+    [englishCardImageView addGestureRecognizer:rightGesture];
+}
+
+//# 左滑触及的方法 目的是 上一张照片 给自己定义的方法传参数标记1
+- (void)leftAction:(UISwipeGestureRecognizer *)sender
+{
+    [self transitionAnimation:1];
+}
+
+//# 右滑触及的方法 目的是 下一张照片 给自己定义的方法传参数标记0
+- (void)rightAction:(UISwipeGestureRecognizer *)sender
+{
+    [self transitionAnimation:0];
+}
+
+- (void)transitionAnimation:(BOOL)isNext
+{
+    NSString * subtypeString;
+    if (isNext) {
+        subtypeString = kCATransitionFromLeft;
+    } else {
+        subtypeString = kCATransitionFromRight;
+    }
+    [self transitionWithType:kCATransitionReveal withSubType:subtypeString forView:self.englishCardImageView];
+    self.englishCardImageView.image = [self getImage:isNext];
+    self.englishLeftCardImageView.image = [self getLeftImage:isNext];
+    self.englishRightCardImageView.image = [self getRightImage:isNext];
+}
+
+- (UIImage *)getImage:(BOOL)isNext
+{
+    if (isNext) {
+        self.currentIndex = (self.currentIndex+1) % 3;
+    } else {
+        self.currentIndex = (self.currentIndex-1+5) % 3;
+    }
+    NSInteger currentInteger = self.currentIndex + 5;
+    NSString * imageName;
+    if (currentInteger == 5) {
+        imageName = [NSString stringWithFormat:@"%ld.jpeg",currentInteger];
+    } else {
+        imageName = [NSString stringWithFormat:@"%ld.jpg",currentInteger];
+    }
+    return [UIImage imageNamed:imageName];
+}
+
+- (UIImage *)getLeftImage:(BOOL)isNext
+{
+    self.currentLeftIndex = self.currentIndex - 1;
+    NSInteger currentInteger = self.currentLeftIndex + 5;
+    NSString * imageName;
+    if (currentInteger == 5) {
+        imageName = [NSString stringWithFormat:@"%ld.jpeg",currentInteger];
+    } else {
+        imageName = [NSString stringWithFormat:@"%ld.jpg",currentInteger];
+    }
+    return [UIImage imageNamed:imageName];
+}
+
+- (UIImage *)getRightImage:(BOOL)isNext
+{
+    if (self.currentIndex < 7) {
+        self.currentRightIndex = self.currentIndex + 1;
+    } else {
+        self.currentRightIndex = self.currentIndex;
+    }
+    NSInteger currentInteger = self.currentRightIndex + 5;
+    NSString * imageName;
+    if (currentInteger == 5) {
+        imageName = [NSString stringWithFormat:@"%ld.jpeg",currentInteger];
+    } else {
+        imageName = [NSString stringWithFormat:@"%ld.jpg",currentInteger];
+    }
+    return [UIImage imageNamed:imageName];
 }
 
 - (void)setScrollViewAndMasonryByContrainView
@@ -158,6 +258,8 @@
     [self.scrollView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.equalTo(self.view);
     }];
+    
+    [self addImageView];
 
 #pragma mark:set up mainTableView
     self.mainTableView = [[UITableView alloc] init];
@@ -455,7 +557,9 @@
 #pragma mark Request:
 //明天：搜索框定位准确 解决搜索框占满整个屏幕的问题
 //明天：可触控 拿到接口 做双击单词翻译这个功能
-
+#pragma mark 新一周
+//注意搜索栏 搜索时还说有问题 如果输入1 显示的内容与图片重叠 则无法选中该内容
+//应该在实时搜索时再创建一个界面来展示搜索界面 并把该界面覆盖在最外部   
 
 
 

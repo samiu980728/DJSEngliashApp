@@ -44,4 +44,14 @@
 
 ///按下取消按钮时不去执行srollViewdidScroll
 @property (nonatomic, assign) BOOL cancelButtonNotAllowSrollViewdidScroll;
+
+///记录当前展示的照片次序 (可以理解你正在展示的是第几张照片  从0 开始)
+@property (nonatomic, assign) NSInteger currentIndex;
+
+///记录左边照片展示的次序
+@property (nonatomic, assign) NSInteger currentLeftIndex;
+
+///记录右边照片展示的次序
+@property (nonatomic, assign) NSInteger currentRightIndex;
+
 @end
