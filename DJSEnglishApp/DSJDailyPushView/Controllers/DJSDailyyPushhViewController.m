@@ -40,24 +40,26 @@
     self.englishLeftCardImageView = [[DJSEnglishCardImageView alloc] initWithFrame:CGRectMake(10, 170, 214, 260)];
     self.englishLeftCardImageView.image = [UIImage imageNamed:@"6.jpg"];
     self.englishLeftCardImageView.contentMode = UIViewContentModeScaleAspectFill;
-//    [self.englishLeftCardImageView setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"6.jpg"]]];
     self.englishLeftCardImageView.userInteractionEnabled = YES;
-
     [self.scrollView addSubview:self.englishLeftCardImageView];
     
     self.englishRightCardImageView = [[DJSEnglishCardImageView alloc] initWithFrame:CGRectMake(190, 170, 214, 260)];
     self.englishRightCardImageView.image = [UIImage imageNamed:@"7.jpg"];
     self.englishRightCardImageView.contentMode = UIViewContentModeScaleAspectFill;
-    //[self.englishRightCardImageView setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"7.jpg"]]];
     self.englishRightCardImageView.userInteractionEnabled = YES;
     [self.scrollView addSubview:self.englishRightCardImageView];
     
     self.englishCardImageView = [[DJSEnglishCardImageView alloc] initWithFrame:CGRectMake(100, 150, 214, 300)];
+    
+    
     self.englishCardImageView.contentMode = UIViewContentModeScaleAspectFill;
     self.englishCardImageView.image = [UIImage imageNamed:@"5.jpeg"];
+#pragma mark Request:   添加点击放大手势
+    UITapGestureRecognizer * tapGestureRecognized = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(scanBigImageClick:)];
+    [self.englishCardImageView addGestureRecognizer:tapGestureRecognized];
+    
     [self getLeftGestureRecognizeIimageView:self.englishCardImageView];
     [self getRightGestureRecognizeIimageView:self.englishCardImageView];
-    //[self.englishCardImageView setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"5.jpeg"]]];
     self.englishCardImageView.userInteractionEnabled = YES;
     [self.scrollView addSubview:self.englishCardImageView];
 //    _englishCardImageView = [[DJSEnglishCardImageView alloc] init];
@@ -68,6 +70,16 @@
 //        make.top.mas_equalTo(self.view.mas_top).offset(100);
 //        make.height.mas_equalTo(200);
 //    }];
+}
+
+//生成点击放大手势
+- (void)scanBigImageClick:(UITapGestureRecognizer *)tap
+{
+    NSLog(@"点击图片");
+    UIImageView * clickedImageView = (UIImageView *)tap.view;
+    UIWindow * window = [UIApplication sharedApplication].keyWindow;
+    [DJSEnglishCardImageView scanBigImageWithImage:clickedImageView.image frame:[clickedImageView convertRect:clickedImageView.bounds toView:window]];
+//    [DJSEnglishCardImageView scanBigImageWithImageView:clickedImageView];
 }
 
 //生成左手势
@@ -139,6 +151,7 @@
     } else {
         imageName = [NSString stringWithFormat:@"%ld.jpg",currentInteger];
     }
+    NSLog(@"currentInteger = %li",currentInteger);
     return [UIImage imageNamed:imageName];
 }
 
@@ -156,6 +169,7 @@
     } else {
         imageName = [NSString stringWithFormat:@"%ld.jpg",currentInteger];
     }
+    NSLog(@"currentIntegerRight = %li",currentInteger);
     return [UIImage imageNamed:imageName];
 }
 
@@ -557,6 +571,8 @@
 #pragma mark Request:
 //明天：搜索框定位准确 解决搜索框占满整个屏幕的问题
 //明天：可触控 拿到接口 做双击单词翻译这个功能
+//明天：理顺切换次序关系 实现点击图片放大 导入英文美文做实验
+
 #pragma mark 新一周
 //注意搜索栏 搜索时还说有问题 如果输入1 显示的内容与图片重叠 则无法选中该内容
 //应该在实时搜索时再创建一个界面来展示搜索界面 并把该界面覆盖在最外部   
