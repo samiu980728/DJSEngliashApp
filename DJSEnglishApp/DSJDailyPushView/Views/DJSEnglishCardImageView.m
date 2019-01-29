@@ -34,6 +34,9 @@ static CGRect oldFrame;
     [self.imageCardLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.equalTo(self);
     }];
+    self.imageCardLabel.numberOfLines = 0;
+    self.imageCardLabel.textAlignment = NSTextAlignmentCenter;
+    self.imageCardLabel.text = @"Absence to love is what wind is to fire. It extinguishes the small; it inflames the great. (Roger de Bussy-Rabutin, French writer)";
     self.imageCardLabel.font = [UIFont systemFontOfSize:15];
     
 }
@@ -47,7 +50,7 @@ static CGRect oldFrame;
 {
     UIWindow * window = [UIApplication sharedApplication].keyWindow;
     [self scanBigImageWithImage:currentImageview.image frame:[currentImageview convertRect:currentImageview.bounds toView:window]];
-    //convertRect:<#(CGRect)#> toView:<#(nullable UIView *)#>
+    //convertRect:(CGRect) toView:(nullable UIView *)
     //算出currentImageview 相对于窗口的位置
 }
 
@@ -69,14 +72,23 @@ static CGRect oldFrame;
     
     //将所有展示的imageView重新绘制到背景视图中
     UIImageView * imageView = [[UIImageView alloc] initWithFrame:oldFrame];
+//    UILabel * imageCardLabel = [[UILabel alloc] init];
+//    imageCardLabel.numberOfLines = 0;
+//    imageCardLabel.textAlignment = NSTextAlignmentCenter;
+//    imageCardLabel.font = [UIFont systemFontOfSize:15];
+//    imageCardLabel.text = @"Absence to love is what wind is to fire. It extinguishes the small; it inflames the great. (Roger de Bussy-Rabutin, French writer)";
+//    [imageView addSubview:imageCardLabel];
+//    [imageCardLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.edges.equalTo(imageView);
+//    }];
     imageView.image = image;
     imageView.tag = 1024;
     [backGroundView addSubview:imageView];
     [window addSubview:backGroundView];
 #pragma mark Request: 添加手势：放大后的图片单机则可返回原状 还需添加一个手势 或者：加一个导航栏 用push与pop???
     UITapGestureRecognizer * tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(hideImageView:)];
+//    tapGestureRecognizer.delegate = self;
     [backGroundView addGestureRecognizer:tapGestureRecognizer];
-    
     [UIView animateWithDuration:0.4 animations:^{
         CGFloat y,width,height;
         y = ([UIScreen mainScreen].bounds.size.height - image.size.height * [UIScreen mainScreen].bounds.size.width / image.size.width) * 0.5;
@@ -87,8 +99,55 @@ static CGRect oldFrame;
         [imageView setFrame:CGRectMake(0, y, width, height)];
         backGroundView.alpha = 1;
     } completion:^(BOOL finished) {
+#pragma mark Request:添加关闭按钮和卡片Label
+        UIButton * cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        [cancelButton setImage:[UIImage imageNamed:@"1.png"] forState:UIControlStateNormal];
+        [cancelButton addTarget:self action:@selector(cancelImageView:) forControlEvents:UIControlEventTouchUpInside];
+        [backGroundView addSubview:cancelButton];
+        [cancelButton mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.top.mas_equalTo(backGroundView.mas_top).offset(15);
+            make.left.mas_equalTo(backGroundView.mas_right).offset(-40);
+            make.width.mas_equalTo(30);
+            make.height.mas_equalTo(30);
+        }];
+        
+        UILabel * imageCardLabel = [[UILabel alloc] init];
+        imageCardLabel.numberOfLines = 0;
+        imageCardLabel.textAlignment = NSTextAlignmentCenter;
+        imageCardLabel.font = [UIFont systemFontOfSize:15];
+        imageCardLabel.text = @"Absence to love is what wind is to fire. It extinguishes the small; it inflames the great. (Roger de Bussy-Rabutin, French writer)";
+        [imageView addSubview:imageCardLabel];
+        [imageCardLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.edges.equalTo(imageView);
+        }];
+#pragma mark:从背景视图移除手势
+        [backGroundView removeGestureRecognizer:tapGestureRecognizer];
         
     }];
+}
+
++ (void)cancelImageView:(UIButton *)cancelButton
+{
+    UIView * backGroundView = cancelButton.superview;
+    UIImageView * imageView = [cancelButton.superview viewWithTag:1024];
+    //恢复
+    [UIView animateWithDuration:0.4 animations:^{
+        //[imageView setFrame:oldFrame];
+        [backGroundView setAlpha:0];
+    } completion:^(BOOL finished) {
+        [imageView setFrame:oldFrame];
+        //完成后的操作 把背景视图删除
+        [backGroundView removeFromSuperview];
+    }];
+}
+
+//判断该视图是否为父视图的子视图
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch
+{
+    if ([touch.view isDescendantOfView:touch.view.superview]) {
+        return NO;
+    }
+    return YES;
 }
 
 /**
@@ -104,9 +163,10 @@ static CGRect oldFrame;
     UIImageView * imageView = [tap.view viewWithTag:1024];
     //恢复
     [UIView animateWithDuration:0.4 animations:^{
-        [imageView setFrame:oldFrame];
+        //[imageView setFrame:oldFrame];
         [backGroundView setAlpha:0];
     } completion:^(BOOL finished) {
+        [imageView setFrame:oldFrame];
         //完成后的操作 把背景视图删除
         [backGroundView removeFromSuperview];
     }];

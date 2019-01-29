@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface DJSEnglishCardImageView : UIImageView
+@interface DJSEnglishCardImageView : UIImageView <UIGestureRecognizerDelegate>
 
 @property (nonatomic, strong) UIImage * cardImage;
 
@@ -19,6 +19,8 @@
 @property (nonatomic, assign) id target;
 
 @property (nonatomic, assign) SEL action;
+
+@property (nonatomic, strong) UITapGestureRecognizer * tapGestureRecognizer;
 
 /**
  * 浏览大图

@@ -78,6 +78,7 @@
     NSLog(@"点击图片");
     UIImageView * clickedImageView = (UIImageView *)tap.view;
     UIWindow * window = [UIApplication sharedApplication].keyWindow;
+    NSLog(@"clickedImageView.image = %@",clickedImageView.image);
     [DJSEnglishCardImageView scanBigImageWithImage:clickedImageView.image frame:[clickedImageView convertRect:clickedImageView.bounds toView:window]];
 //    [DJSEnglishCardImageView scanBigImageWithImageView:clickedImageView];
 }
@@ -345,10 +346,6 @@
 
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
 {
-//    self.navigationItem.rightBarButtonItem = nil;
-//    self.mainTableView.tableHeaderView = _searchController.searchBar;
-//    self.navigationController.navigationBar.hidden = NO;
-//    _searchController.hidesNavigationBarDuringPresentation = YES;
     _cancelButtonIfSelected = YES;
 }
 
