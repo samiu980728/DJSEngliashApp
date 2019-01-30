@@ -126,6 +126,41 @@ static CGRect oldFrame;
     }];
 }
 
+//每个单词的label 双击查看手势
+- (void)buildGestureWithLabelText:(NSString *)word forUIImageView:(UIImageView *)imageView
+{
+    UILabel * textLabel = [[UILabel alloc] init];
+    //算出该单词的宽度
+    float contentSize = [word boundingRectWithSize:CGSizeMake(326, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName:[UIFont systemFontOfSize:15]} context:nil].size.width;
+    textLabel.text = word;
+    [imageView addSubview:textLabel];
+    [textLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.width.mas_equalTo(contentSize+10);
+#pragma mark - Request: 单词的位置怎么搞???  看一下弹幕的源码 确定他是屏幕上显示的每个弹幕都是一个独一无二的label 不存在占用内存问题
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+    }];
+}
+
 + (void)cancelImageView:(UIButton *)cancelButton
 {
     UIView * backGroundView = cancelButton.superview;
