@@ -8,6 +8,7 @@
 
 #import "DJSEnglishCardImageView.h"
 #import <Masonry.h>
+
 @implementation DJSEnglishCardImageView
 
 //imageView 的 action: 就是一个方法 ：@seletor(clicked:) 这个方法里面具体的内容就是点击后该imageView进行高亮，并将其位置从左侧或者右侧切换到中间并且在移动的过程中均匀变大
