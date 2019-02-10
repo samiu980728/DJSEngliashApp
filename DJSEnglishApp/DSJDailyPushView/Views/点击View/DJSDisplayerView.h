@@ -7,10 +7,11 @@
 //
 
 #import <UIKit/UIKit.h>
-
+#import "DJSCoreTextData.h"
 @interface DJSDisplayerView : UIView
 
-
+///绘制文本的数据信息
+@property (nonatomic, strong) DJSCoreTextData * data;
 
 
 @end
