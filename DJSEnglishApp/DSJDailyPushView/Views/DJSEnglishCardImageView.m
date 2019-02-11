@@ -8,6 +8,9 @@
 
 #import "DJSEnglishCardImageView.h"
 #import <Masonry.h>
+#import "DJSDisplayerView.h"
+#import "DJSCTFrameParserConfig.h"
+#import "DJSCTFrameParser.h"
 
 @implementation DJSEnglishCardImageView
 
@@ -25,8 +28,24 @@ static CGRect oldFrame;
         self.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"2.jpeg"]];
         self.imageCardLabel = [[UILabel alloc] init];
         [self addSubview:self.imageCardLabel];
+        //[self initUI];
     }
     return self;
+}
+
+- (void)initUI
+{
+    DJSDisplayerView * displayView = [[DJSDisplayerView alloc] initWithFrame:CGRectMake(10, 100, self.bounds.size.width - 20, 0)];
+    displayView.backgroundColor = [UIColor clearColor];
+    
+    //配备文本属性信息
+    DJSCTFrameParserConfig * config = [[DJSCTFrameParserConfig alloc] init];
+    config.width = displayView.bounds.size.width;
+    config.textColor = [UIColor blackColor];
+    
+    //得到文本数据
+    displayView.data = [DJSCTFrameParser parseTemplateWhithoutFileButConfig:config];
+    [self addSubview:displayView];
 }
 
 - (void)layoutSubviews
@@ -73,23 +92,13 @@ static CGRect oldFrame;
     
     //将所有展示的imageView重新绘制到背景视图中
     UIImageView * imageView = [[UIImageView alloc] initWithFrame:oldFrame];
-//    UILabel * imageCardLabel = [[UILabel alloc] init];
-//    imageCardLabel.numberOfLines = 0;
-//    imageCardLabel.textAlignment = NSTextAlignmentCenter;
-//    imageCardLabel.font = [UIFont systemFontOfSize:15];
-//    imageCardLabel.text = @"Absence to love is what wind is to fire. It extinguishes the small; it inflames the great. (Roger de Bussy-Rabutin, French writer)";
-//    [imageView addSubview:imageCardLabel];
-//    [imageCardLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-//        make.edges.equalTo(imageView);
-//    }];
     imageView.image = image;
     imageView.tag = 1024;
     [backGroundView addSubview:imageView];
     [window addSubview:backGroundView];
 #pragma mark Request: 添加手势：放大后的图片单机则可返回原状 还需添加一个手势 或者：加一个导航栏 用push与pop???
     UITapGestureRecognizer * tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(hideImageView:)];
-//    tapGestureRecognizer.delegate = self;
-    [backGroundView addGestureRecognizer:tapGestureRecognizer];
+//    [backGroundView addGestureRecognizer:tapGestureRecognizer];
     [UIView animateWithDuration:0.4 animations:^{
         CGFloat y,width,height;
         y = ([UIScreen mainScreen].bounds.size.height - image.size.height * [UIScreen mainScreen].bounds.size.width / image.size.width) * 0.5;
@@ -104,6 +113,7 @@ static CGRect oldFrame;
         UIButton * cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
         [cancelButton setImage:[UIImage imageNamed:@"1.png"] forState:UIControlStateNormal];
         [cancelButton addTarget:self action:@selector(cancelImageView:) forControlEvents:UIControlEventTouchUpInside];
+//        [cancelButton addTarget:self action:@selector(cancelImageView:) forControlEvents:UIControlEventTouchUpInside];
         [backGroundView addSubview:cancelButton];
         [cancelButton mas_makeConstraints:^(MASConstraintMaker *make) {
             make.top.mas_equalTo(backGroundView.mas_top).offset(15);
@@ -111,6 +121,21 @@ static CGRect oldFrame;
             make.width.mas_equalTo(30);
             make.height.mas_equalTo(30);
         }];
+        
+        DJSDisplayerView * displayView = [[DJSDisplayerView alloc] initWithFrame:CGRectMake(10, 100, imageView.bounds.size.width - 20, 0)];
+        imageView.userInteractionEnabled = YES;
+        displayView.userInteractionEnabled = YES;
+        displayView.tag = 728;
+        displayView.backgroundColor = [UIColor clearColor];
+        
+        //配备文本属性信息
+        DJSCTFrameParserConfig * config = [[DJSCTFrameParserConfig alloc] init];
+        config.width = displayView.bounds.size.width;
+        config.textColor = [UIColor blackColor];
+//
+//        //得到文本数据
+        displayView.data = [DJSCTFrameParser parseTemplateWhithoutFileButConfig:config];
+//        [imageView addSubview:displayView];
         
         UILabel * imageCardLabel = [[UILabel alloc] init];
         imageCardLabel.numberOfLines = 0;
@@ -122,7 +147,8 @@ static CGRect oldFrame;
             make.edges.equalTo(imageView);
         }];
 #pragma mark:从背景视图移除手势
-        [backGroundView removeGestureRecognizer:tapGestureRecognizer];
+//        [backGroundView removeGestureRecognizer:tapGestureRecognizer];
+        [imageView addSubview:displayView];
         
     }];
 }
@@ -138,27 +164,6 @@ static CGRect oldFrame;
     [textLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.width.mas_equalTo(contentSize+10);
 #pragma mark - Request: 单词的位置怎么搞???  看一下弹幕的源码 确定他是屏幕上显示的每个弹幕都是一个独一无二的label 不存在占用内存问题
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
     }];
 }
 
@@ -166,12 +171,14 @@ static CGRect oldFrame;
 {
     UIView * backGroundView = cancelButton.superview;
     UIImageView * imageView = [cancelButton.superview viewWithTag:1024];
+    UIView * view = [cancelButton.superview viewWithTag:728];
     //恢复
     [UIView animateWithDuration:0.4 animations:^{
         //[imageView setFrame:oldFrame];
         [backGroundView setAlpha:0];
     } completion:^(BOOL finished) {
         [imageView setFrame:oldFrame];
+        [view setFrame:oldFrame];
         //完成后的操作 把背景视图删除
         [backGroundView removeFromSuperview];
     }];
@@ -197,12 +204,14 @@ static CGRect oldFrame;
     //原始的imageView
     //查找tag值为1024的imageView 这个view就是带有图片的view
     UIImageView * imageView = [tap.view viewWithTag:1024];
+    UIView * view = [tap.view viewWithTag:728];
     //恢复
     [UIView animateWithDuration:0.4 animations:^{
         //[imageView setFrame:oldFrame];
         [backGroundView setAlpha:0];
     } completion:^(BOOL finished) {
         [imageView setFrame:oldFrame];
+        [view setFrame:oldFrame];
         //完成后的操作 把背景视图删除
         [backGroundView removeFromSuperview];
     }];

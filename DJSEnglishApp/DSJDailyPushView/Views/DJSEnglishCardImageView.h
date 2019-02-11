@@ -10,6 +10,8 @@
 
 @interface DJSEnglishCardImageView : UIImageView <UIGestureRecognizerDelegate>
 
+- (void)initUI;
+
 @property (nonatomic, strong) UIImage * cardImage;
 
 @property (nonatomic, strong) UILabel * textLabel;
