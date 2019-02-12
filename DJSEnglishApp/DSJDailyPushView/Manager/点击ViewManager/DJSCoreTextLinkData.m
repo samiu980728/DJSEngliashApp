@@ -65,9 +65,61 @@
             //linkAtIndex:这个函数就是通过idx根据位置来判断第idx个字符是否在data.linkArray 这个之前就设置好的存放链接的数组中
             //意思就是看你点击的这个字符是否是之前设置好的字符链接中的字符中的一个
             linkData = [self linkAtIndex:idx linkArray:data.linkArray];
-            NSString * urlStr = @"https://github.com/samiu980728/Cor   https://github.com/samiu980728/CoreText-/edit/master/README.md 12 212121212565656565656565";
+            NSString * urlStr = @"GaoYiJiaAbsence to love is what wind is to fire. It extinguishes the small; it inflames the great. (Roger de Bussy-Rabutin, French writer";
+#pragma mark  得到idx 遍历urlStr 得到编号为idx之前的一个空格和之后的一个空格 首先得把string放到数组中去
+            NSRange range;
+            NSMutableArray * urlMutArray = [[NSMutableArray alloc] init];
+            for (int i = 0; i < urlStr.length; i += range.length) {
+                unichar chara = [urlStr characterAtIndex:i];
+                range = [urlStr rangeOfComposedCharacterSequenceAtIndex:i];
+                NSString * subStr = [urlStr substringWithRange:range];
+                //NSLog(@"subStr = %@ NSStringFromRange(range) = %@",subStr,NSStringFromRange(range));
+                [urlMutArray addObject:subStr];
+            }
+            NSLog(@"urlMutArray = %@",urlMutArray);
+            NSString * getString = [urlMutArray objectAtIndex:idx];
+            if ([getString isEqualToString:@" "]) {
+                linkData.urlString = @"";
+            } else {
+                NSString * blackSpaceStr = [[NSString alloc] init];
+                NSString * blackSpaceRightStr = [[NSString alloc] init];
+                NSInteger blackSpaceLeftInteger = 0;
+                NSInteger blackSpaceRightInteger = 0;
+                NSInteger ifBlackSpaceInteger = 0;
+                for (int i = (int)idx-1; i > 0; i--) {
+                NSString * idxStr = [urlMutArray objectAtIndex:i];
+                if ([idxStr isEqualToString:@" "]) {
+                    blackSpaceStr = [urlMutArray objectAtIndex:i+1];
+                    blackSpaceLeftInteger = i;
+                    ifBlackSpaceInteger = 1;
+                    break;
+                }
+            }
+                if (ifBlackSpaceInteger == 0) {
+                    blackSpaceStr = [urlMutArray objectAtIndex:0];
+                    blackSpaceLeftInteger = 0;
+                }
+                
+                NSInteger ifBlackSpaceRightInteger = 0;
+                for (int i = (int)idx-1; i < urlMutArray.count; i++) {
+                    NSString * idxStr = [urlMutArray objectAtIndex:i];
+                    if ([idxStr isEqualToString:@" "]) {
+                        blackSpaceRightStr = [urlMutArray objectAtIndex:i-1];
+                        blackSpaceRightInteger = i;
+                        ifBlackSpaceRightInteger = 1;
+                        break;
+                    }
+                }
+                if (ifBlackSpaceRightInteger == 0) {
+                    blackSpaceRightStr = urlMutArray[urlMutArray.count-1];
+                    blackSpaceRightInteger = urlMutArray.count-1;
+                }
+                
+#pragma mark  好了 现在实现完毕得到点击处的具体单词功能了 下一步就是调用接口  
+                NSLog(@"blackSpaceStr = %@ blackSpaceRightStr = %@\n blackSpaceLeftInteger = %li blackSpaceRightInteger = %li",blackSpaceStr,blackSpaceRightStr,blackSpaceLeftInteger,blackSpaceRightInteger);
             NSString * realStr = [urlStr substringFromIndex:idx];
             linkData.urlString = realStr;
+            }
             break;
         }
     }

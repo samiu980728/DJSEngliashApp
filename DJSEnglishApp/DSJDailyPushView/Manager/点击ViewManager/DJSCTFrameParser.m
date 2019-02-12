@@ -27,7 +27,8 @@
     //用一个数组存储所有文字信息
     NSUInteger startPos = attStringM.length;
     NSLog(@"startPos = %li",startPos);
-    NSAttributedString * attString0 = [[NSAttributedString alloc] initWithString:@"GaoYiJia"];
+    NSDictionary * attDictionary0 = @{NSFontAttributeName:[UIFont systemFontOfSize:20]};
+    NSAttributedString * attString0 = [[NSAttributedString alloc] initWithString:@"GaoYiJia" attributes:attDictionary0];
     [attStringM appendAttributedString:attString0];
     startPos = attStringM.length;
     NSAttributedString * attString = [self parseAttributedContentWithoutNSDictionaryButConfig:config];
@@ -60,9 +61,11 @@
     //配置文字
     //    NSString *content = dict[@"content"];
     //    NSAttributedString *attString = [[NSAttributedString alloc] initWithString:content attributes:attributes];
-    NSAttributedString * attString1 = [[NSAttributedString alloc] initWithString:@"https://github.com/samiu980728/CoreText-/edit/master/README.md 12 212121212565656565656565"];
+    NSAttributedString * attString1 = [[NSAttributedString alloc] initWithString:@"Absence to love is what wind is to fire. It extinguishes the small; it inflames the great. (Roger de Bussy-Rabutin, French writer"];
+    NSDictionary * attDictionary2 = @{NSFontAttributeName:[UIFont systemFontOfSize:20]};
+    NSAttributedString * attString2 = [[NSAttributedString alloc] initWithString:@"Absence to love is what wind is to fire. It extinguishes the small; it inflames the great. (Roger de Bussy-Rabutin, French writer" attributes:attDictionary2];
     
-    return attString1;
+    return attString2;
 }
 
 #pragma mark attention 这个函数加入与否只是与字体大小还有字形相关 不影响实际使用

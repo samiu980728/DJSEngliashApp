@@ -122,7 +122,8 @@ static CGRect oldFrame;
             make.height.mas_equalTo(30);
         }];
         
-        DJSDisplayerView * displayView = [[DJSDisplayerView alloc] initWithFrame:CGRectMake(10, 100, imageView.bounds.size.width - 20, 0)];
+//        DJSDisplayerView * displayView = [[DJSDisplayerView alloc] initWithFrame:CGRectMake(10, 100, imageView.bounds.size.width - 20, 0)];
+        DJSDisplayerView * displayView = [[DJSDisplayerView alloc] initWithFrame:CGRectMake(0, imageView.bounds.size.height/2, imageView.bounds.size.width, imageView.bounds.size.height/2)];
         imageView.userInteractionEnabled = YES;
         displayView.userInteractionEnabled = YES;
         displayView.tag = 728;
@@ -141,7 +142,7 @@ static CGRect oldFrame;
         imageCardLabel.numberOfLines = 0;
         imageCardLabel.textAlignment = NSTextAlignmentCenter;
         imageCardLabel.font = [UIFont systemFontOfSize:15];
-        imageCardLabel.text = @"Absence to love is what wind is to fire. It extinguishes the small; it inflames the great. (Roger de Bussy-Rabutin, French writer)";
+//        imageCardLabel.text = @"Absence to love is what wind is to fire. It extinguishes the small; it inflames the great. (Roger de Bussy-Rabutin, French writer)";
         [imageView addSubview:imageCardLabel];
         [imageCardLabel mas_makeConstraints:^(MASConstraintMaker *make) {
             make.edges.equalTo(imageView);
