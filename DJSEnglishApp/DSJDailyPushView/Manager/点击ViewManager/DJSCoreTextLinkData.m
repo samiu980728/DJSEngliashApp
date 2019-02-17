@@ -117,8 +117,18 @@
                 
 #pragma mark  好了 现在实现完毕得到点击处的具体单词功能了 下一步就是调用接口  
                 NSLog(@"blackSpaceStr = %@ blackSpaceRightStr = %@\n blackSpaceLeftInteger = %li blackSpaceRightInteger = %li",blackSpaceStr,blackSpaceRightStr,blackSpaceLeftInteger,blackSpaceRightInteger);
+                NSMutableString * finalRealStr = [[NSMutableString alloc] init];
+                for (int i = (int)blackSpaceLeftInteger; i < blackSpaceRightInteger; i++) {
+                    NSString * subStr = urlMutArray[i];
+                    int asciiCode = [subStr characterAtIndex:0];
+                    NSLog(@"asciiCode = %d",asciiCode);
+                    if ((97 <= asciiCode && 122 >= asciiCode) || (65 <= asciiCode && asciiCode <= 90)) {
+                    [finalRealStr appendString:urlMutArray[i]];
+                    }
+                }
+                NSLog(@"finalRealStr = %@",finalRealStr);
             NSString * realStr = [urlStr substringFromIndex:idx];
-            linkData.urlString = realStr;
+            linkData.urlString = finalRealStr;
             }
             break;
         }

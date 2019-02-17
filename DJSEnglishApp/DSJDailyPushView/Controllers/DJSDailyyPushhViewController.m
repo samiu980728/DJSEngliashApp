@@ -62,14 +62,6 @@
     [self getRightGestureRecognizeIimageView:self.englishCardImageView];
     self.englishCardImageView.userInteractionEnabled = YES;
     [self.scrollView addSubview:self.englishCardImageView];
-//    _englishCardImageView = [[DJSEnglishCardImageView alloc] init];
-//    [self.scrollView addSubview:_englishCardImageView];
-//    [_englishCardImageView mas_makeConstraints:^(MASConstraintMaker *make) {
-//        make.left.mas_equalTo(self.view.mas_left).offset(90);
-//        make.right.mas_equalTo(self.view.mas_right);
-//        make.top.mas_equalTo(self.view.mas_top).offset(100);
-//        make.height.mas_equalTo(200);
-//    }];
 }
 
 //生成点击放大手势

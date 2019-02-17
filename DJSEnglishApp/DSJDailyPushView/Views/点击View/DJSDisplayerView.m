@@ -9,6 +9,8 @@
 #import "DJSDisplayerView.h"
 #import <CoreText/CoreText.h>
 #import "DJSCoreTextLinkData.h"
+#import "DJSShowTranslateView.h"
+#import <Masonry.h>
 @implementation DJSDisplayerView
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -37,8 +39,27 @@
     
     if (linkData != nil) {
 #pragma mark Request 新需求:想点击不同的文字 出现的弹窗上
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"提示" message:linkData.urlString delegate:nil cancelButtonTitle:@"OK222" otherButtonTitles:nil];
-        [alert show];
+        DJSShowTranslateView * translateView = [[DJSShowTranslateView alloc] init];
+        translateView.tag = 100;
+//        DJSShowTranslateView * translateView = [[DJSShowTranslateView alloc ]initWithFrame:CGRectMake(50, 20, 260, 250)];
+        translateView.backgroundColor = [UIColor whiteColor];
+        [translateView showTranslateMessageWithString:@"salt"];
+#pragma mark attention 现在的问题是网络请求的确成功了 但是label上显示不出来 很奇怪    奥懂了 延迟函数不应该在这里用   应该在 label.text = xxx 用！！！！
+            NSString * string = translateView.translateLabel.text;
+            translateView.translateLabel.text = string;
+            [self addSubview:translateView];
+#pragma mark attention 这里不能用Masonry吧 应该用什么？
+        //得到self的父视图
+        UIView * superView = self.superview;
+        [translateView mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.bottom.mas_equalTo(superView.mas_bottom);
+//            make.top.mas_equalTo(self.mas_bottom).mas_offset(-100);
+            make.height.mas_equalTo(150);
+            make.width.mas_equalTo(superView.mas_width);
+        }];
+        
+//        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"提示" message:linkData.urlString delegate:nil cancelButtonTitle:@"OK222" otherButtonTitles:nil];
+//        [alert show];
         return;
     }
 }
@@ -64,6 +85,19 @@
         _data = data;
     }
     self.frame = CGRectMake(self.frame.origin.x, self.frame.origin.y, self.bounds.size.width, self.data.height);
+}
+
+- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+{
+//    UIView * imageView = self.superview;
+//    CGPoint point = [[touches anyObject] locationInView:imageView];
+//    //坐标转化 第一个参数是 点击在DJSShowTranslateView上的坐标
+//    UIView * translateView = [self.superview viewWithTag:100];
+//    [translateView removeFromSuperview];
+//    point = [imageView.layer convertPoint:point fromLayer:translateView.layer];
+//    for (UIView * subView in imageView.subviews) {
+//
+//    }
 }
 
 
