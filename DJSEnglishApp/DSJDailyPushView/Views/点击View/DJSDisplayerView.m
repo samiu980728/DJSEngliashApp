@@ -31,9 +31,13 @@
 #pragma mark - Request 手势的点击事件
 - (void)tapGestureClickedEvent:(UITapGestureRecognizer *)tap
 {
+    if ([self viewWithTag:100]) {
+        UIView * superTranslateView = [self viewWithTag:100];
+        [superTranslateView removeFromSuperview];
+    }
+    
     //得到点击点所在位置
     CGPoint point = [tap locationInView:self];
-    NSLog(@"11111111111111111111");
     ///判断是否点击在文字上 点击到了才会给弹窗中出现的文字赋值
     DJSCoreTextLinkData * linkData = [DJSCoreTextLinkData touchLinkView:self atPoint:point data:self.data];
     
@@ -41,27 +45,47 @@
 #pragma mark Request 新需求:想点击不同的文字 出现的弹窗上
         DJSShowTranslateView * translateView = [[DJSShowTranslateView alloc] init];
         translateView.tag = 100;
-//        DJSShowTranslateView * translateView = [[DJSShowTranslateView alloc ]initWithFrame:CGRectMake(50, 20, 260, 250)];
+
         translateView.backgroundColor = [UIColor whiteColor];
         [translateView showTranslateMessageWithString:@"salt"];
 #pragma mark attention 现在的问题是网络请求的确成功了 但是label上显示不出来 很奇怪    奥懂了 延迟函数不应该在这里用   应该在 label.text = xxx 用！！！！
             NSString * string = translateView.translateLabel.text;
             translateView.translateLabel.text = string;
             [self addSubview:translateView];
+        
+        //弹出视图动画
+        [UIView animateWithDuration:0.15 animations:^{
+            [translateView setFrame:CGRectMake(0, translateView.bounds.origin.y-50, translateView.bounds.size.width, translateView.bounds.size.height)];
+        }];
+        
 #pragma mark attention 这里不能用Masonry吧 应该用什么？
         //得到self的父视图
         UIView * superView = self.superview;
         [translateView mas_makeConstraints:^(MASConstraintMaker *make) {
             make.bottom.mas_equalTo(superView.mas_bottom);
-//            make.top.mas_equalTo(self.mas_bottom).mas_offset(-100);
-            make.height.mas_equalTo(150);
+            make.height.mas_equalTo(200);
             make.width.mas_equalTo(superView.mas_width);
         }];
         
-//        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"提示" message:linkData.urlString delegate:nil cancelButtonTitle:@"OK222" otherButtonTitles:nil];
-//        [alert show];
+#pragma mark Request 为视图的左上角 右上角加圆角
+        //加延迟函数 0.1秒后 或者layoutIfNeeded 获取正确frame
+        [translateView.superview layoutIfNeeded];
+        NSLog(@"translateView.bounds = %@",NSStringFromCGRect(translateView.bounds));
+        UIBezierPath * maskPath = [UIBezierPath bezierPathWithRoundedRect:translateView.bounds byRoundingCorners:UIRectCornerTopLeft | UIRectCornerTopRight cornerRadii:CGSizeMake(20, 20)];
+        CAShapeLayer * maskLayer = [[CAShapeLayer alloc] init];
+        maskLayer.frame = translateView.bounds;
+        maskLayer.path = maskPath.CGPath;
+        translateView.layer.mask = maskLayer;
+        
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"提示" message:linkData.urlString delegate:nil cancelButtonTitle:@"OK222" otherButtonTitles:nil];
+        [alert show];
         return;
     }
+}
+
+//弹出视图
+- (void)showTranslateView
+{
 }
 
 - (void)drawRect:(CGRect)rect

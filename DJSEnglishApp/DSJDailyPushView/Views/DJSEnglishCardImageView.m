@@ -39,7 +39,6 @@ static CGRect oldFrame;
 {
 #pragma mark attention 这里坐标被修改
     DJSDisplayerView * displayView = [[DJSDisplayerView alloc] init];
-//    DJSDisplayerView * displayView = [[DJSDisplayerView alloc] initWithFrame:CGRectMake(10, 100, self.bounds.size.width - 20, 0)];
     displayView.backgroundColor = [UIColor clearColor];
     
     //配备文本属性信息
@@ -64,7 +63,6 @@ static CGRect oldFrame;
         make.center.equalTo(self);
         make.height.equalTo(@150);
         make.width.equalTo(self.mas_width);
-//        make.edges.equalTo(self);
     }];
     self.imageCardLabel.numberOfLines = 0;
     self.imageCardLabel.textAlignment = NSTextAlignmentCenter;
@@ -112,7 +110,6 @@ static CGRect oldFrame;
     [backGroundView addSubview:imageView];
     [window addSubview:backGroundView];
 #pragma mark Request: 添加手势：放大后的图片单机则可返回原状 还需添加一个手势 或者：加一个导航栏 用push与pop???
-//    UITapGestureRecognizer * tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(hideImageView:)];
     UITapGestureRecognizer * tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(hideTranslateView:)];
     [imageView addGestureRecognizer:tapGestureRecognizer];
     [UIView animateWithDuration:0.4 animations:^{
@@ -129,7 +126,6 @@ static CGRect oldFrame;
         UIButton * cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
         [cancelButton setImage:[UIImage imageNamed:@"1.png"] forState:UIControlStateNormal];
         [cancelButton addTarget:self action:@selector(cancelImageView:) forControlEvents:UIControlEventTouchUpInside];
-//        [cancelButton addTarget:self action:@selector(cancelImageView:) forControlEvents:UIControlEventTouchUpInside];
         [backGroundView addSubview:cancelButton];
         [cancelButton mas_makeConstraints:^(MASConstraintMaker *make) {
             make.top.mas_equalTo(backGroundView.mas_top).offset(15);
@@ -147,21 +143,13 @@ static CGRect oldFrame;
         DJSCTFrameParserConfig * config = [[DJSCTFrameParserConfig alloc] init];
         config.width = displayView.bounds.size.width;
         config.textColor = [UIColor blackColor];
-//
-//        //得到文本数据
+        //得到文本数据
         displayView.data = [DJSCTFrameParser parseTemplateWhithoutFileButConfig:config];
-//        [imageView addSubview:displayView];
-        
+  
         UILabel * imageCardLabel = [[UILabel alloc] init];
         imageCardLabel.numberOfLines = 0;
         imageCardLabel.textAlignment = NSTextAlignmentCenter;
         imageCardLabel.font = [UIFont systemFontOfSize:15];
-//        imageCardLabel.text = @"Absence to love is what wind is to fire. It extinguishes the small; it inflames the great. (Roger de Bussy-Rabutin, French writer)";
-        
-//        [imageView addSubview:imageCardLabel];
-//        [imageCardLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-//            make.edges.equalTo(imageView);
-//        }];
 #pragma mark:从背景视图移除手势
 //        [backGroundView removeGestureRecognizer:tapGestureRecognizer];
         [imageView addSubview:displayView];
@@ -173,7 +161,12 @@ static CGRect oldFrame;
 {
     UIView * superView = tap.view;
     UIView * translateView = [superView viewWithTag:100];
+    //如果点击的位置所在坐标在translate视图中 那么就不能消失
+    CGPoint point = [tap locationInView:superView];
+    point = [superView.layer convertPoint:point toLayer:translateView.layer];
+    if ( ![translateView.layer containsPoint:point] ){
     [translateView removeFromSuperview];
+    }
 }
 
 //每个单词的label 双击查看手势

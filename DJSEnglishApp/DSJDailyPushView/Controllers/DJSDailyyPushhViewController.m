@@ -26,8 +26,6 @@
     _dataMessageList = [NSMutableArray arrayWithObjects:@"1",@"11",@"2",@"22",@"#",@"3",@"33",@"4",@"44",@"ff",@"a",@"aaa",@"555",@"666",nil];
     _searchController = [[UISearchController alloc] initWithSearchResultsController:nil];
     [self searchControllerLayout];
-//    [self searchControllerLayoutSubViews];
-//    [self addImageView];
     _cancelButtonIfSelected = NO;
     _cancelButtonNotAllowSrollViewdidScroll = NO;
     self.currentIndex = 0;
@@ -50,8 +48,6 @@
     [self.scrollView addSubview:self.englishRightCardImageView];
     
     self.englishCardImageView = [[DJSEnglishCardImageView alloc] initWithFrame:CGRectMake(100, 150, 214, 300)];
-    
-    
     self.englishCardImageView.contentMode = UIViewContentModeScaleAspectFill;
     self.englishCardImageView.image = [UIImage imageNamed:@"5.jpeg"];
 #pragma mark Request:   添加点击放大手势
@@ -72,7 +68,6 @@
     UIWindow * window = [UIApplication sharedApplication].keyWindow;
     NSLog(@"clickedImageView.image = %@",clickedImageView.image);
     [DJSEnglishCardImageView scanBigImageWithImage:clickedImageView.image frame:[clickedImageView convertRect:clickedImageView.bounds toView:window]];
-//    [DJSEnglishCardImageView scanBigImageWithImageView:clickedImageView];
 }
 
 //生成左手势
@@ -168,10 +163,6 @@
 
 - (void)setScrollViewAndMasonryByContrainView
 {
-    //这里面的mainTableView 就相当于那个demo里的contrainView
-    //错了 当不点击搜索时 mainTableView 的尺寸时很小的
-    //所以还得创建一个 contrainView 来包裹上面的其他view
-    //这些view 包括： bottomView,_englishCardImageView 等
     UIView * bottomView = [[UIView alloc] init];
     bottomView.backgroundColor = [UIColor blueColor];
 }
@@ -187,7 +178,6 @@
 {
     float orginScrollViewY = self.scrollView.contentOffset.y;
     if (orginScrollViewY > 100) {
-        //self.navigationController.navigationBar.hidden = YES;
         _searchController.hidesNavigationBarDuringPresentation = NO;
         self.englishCardImageView.alpha = 0.5;
         self.englishLeftCardImageView.alpha = 0.5;
@@ -212,17 +202,11 @@
     float orginY = self.englishCardImageView.frame.origin.y;
     float orginScrollViewY = self.scrollView.contentOffset.y;
     NSLog(@"orginScrollViewY = %f",orginScrollViewY);
-#pragma mark Request: when englishCardImageView's orgin y is less than 60 ,searchBar must move to the top of the view and replace the nagivationBar
-//    int ifZeroOriginY = orginScrollViewY;
-//    if (ifZeroOriginY != 0) {
-    
     if (orginScrollViewY > 100) {
 #pragma mark Request: let searchBar move to the nagiavationBar as a rightBarButtonItem, meanwhile let the mainTableView's tableHeaderView disappear
         self.mainTableView.tableHeaderView = nil;
         UIBarButtonItem * searchBarButton = [[UIBarButtonItem alloc] initWithCustomView:_searchController.searchBar];
         self.navigationItem.rightBarButtonItem = searchBarButton;
-        
-        //self.navigationController.navigationBar.hidden = YES;
         //当搜索框被激活时，不必在隐藏导航栏 因为现在搜索框在导航栏上
         _searchController.hidesNavigationBarDuringPresentation = NO;
         self.englishCardImageView.alpha = 0.5;
@@ -233,7 +217,7 @@
             make.height.mas_equalTo(50);
             make.top.mas_equalTo(self.view.mas_top);
         }];
-    } else{
+    } else {
         #pragma mark question： 搜索框无故消失 是这四个之中的问题
         self.navigationItem.rightBarButtonItem = nil;
         if (!self.mainTableView.tableHeaderView) {
@@ -241,7 +225,6 @@
         }
         self.navigationController.navigationBar.hidden = NO;
         _searchController.hidesNavigationBarDuringPresentation = YES;
-
         self.englishCardImageView.alpha = 1.0;
         self.englishLeftCardImageView.alpha = 1.0;
         self.englishRightCardImageView.alpha = 1.0;
@@ -251,8 +234,6 @@
             make.top.mas_equalTo(self.view.mas_top);
         }];
     }
-    
-//    }
 }
 
 - (void)searchControllerLayout
@@ -265,7 +246,6 @@
     [self.scrollView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.equalTo(self.view);
     }];
-    
     [self addImageView];
 
 #pragma mark:set up mainTableView
@@ -273,14 +253,9 @@
     self.mainTableView.delegate = self;
     self.mainTableView.dataSource = self;
     self.mainTableView.backgroundColor = [UIColor clearColor];
-    
 #pragma mark explain: actually it is what you like to set value to mainTableView's backgroundColor or scrollView's backgroundColor,because mainTableView is on the scrollView ,when you do not search anything ,the mainTableView's surface have not anything on it ,so whether you like, there are same means.
-    //self.mainTableView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"3.jpeg"]];
     self.mainTableView.separatorStyle = UITableViewCellEditingStyleNone;
-    
     [self.scrollView addSubview:self.mainTableView];
-    //[self.view addSubview:self.mainTableView];
-    
     [self.mainTableView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.and.right.mas_equalTo(self.view);
         make.height.mas_equalTo(50);
@@ -303,14 +278,6 @@
     [self.searchController.searchBar setValue:@"取消" forKey:@"_cancelButtonText"];
     //表头视图为searchController的searchBar
     self.mainTableView.tableHeaderView = self.searchController.searchBar;
-    
-#pragma mark  Request: why not work out?
-//    [self.searchController.searchBar mas_makeConstraints:^(MASConstraintMaker *make) {
-//        make.left.equalTo(self.view.mas_left);
-//        make.right.equalTo(self.view.mas_right).offset(-100);
-//        make.top.equalTo(self.view.mas_top).mas_offset(50);
-//        make.height.mas_equalTo(100);
-//    }];
    
 #pragma mark:cancel the searchBar's grayColor backGround
     for (UIView * subView in self.searchController.searchBar.subviews) {
@@ -371,8 +338,6 @@
             make.width.mas_equalTo(self.view.mas_width);
             make.height.mas_equalTo(50);
         }];
-        NSLog(@"self.mainTableView.tableHeaderView = %@",self.mainTableView.tableHeaderView);
-        NSLog(@"self.searchController.searchBar.placeholder = %@",self.searchController.searchBar.placeholder);
         self.mainTableView.tableHeaderView.hidden = NO;
     }
     _cancelButtonIfSelected = NO;
@@ -412,9 +377,7 @@
         subTypeString = @"kCATransitionFromLeft";
         [searchCollectionView.cancelButton addTarget:self action:@selector(pressCancelButton:) forControlEvents:UIControlEventTouchUpInside];
         [self transitionWithType:@"rippleEffect" withSubType:subTypeString forView:self.view];
-        
         [self.view addSubview:searchCollectionView];
-        
         [searchCollectionView mas_makeConstraints:^(MASConstraintMaker *make) {
             make.left.equalTo(self.view.mas_left).offset(50);
             make.right.equalTo(self.view.mas_right).offset(-50);
@@ -494,7 +457,6 @@
     self.mainTableView.dataSource = self;
     self.mainTableView.backgroundColor = [UIColor clearColor];
     self.mainTableView.separatorStyle = UITableViewCellEditingStyleNone;
-    //    [self.scrollView addSubview:self.mainTableView];
     [self.contrainView addSubview:self.mainTableView];
     [self.mainTableView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.and.right.mas_equalTo(self.contrainView);
@@ -515,7 +477,6 @@
         make.bottom.mas_equalTo(bottomView.mas_bottom);
     }];
     
-    NSLog(@"self.contrainView.bounds.size.height = %f self.contrainView.bounds.size.width = %f",self.contrainView.bounds.size.height,self.contrainView.bounds.size.width);
 #pragma mark:set up searchController
     _searchController = [[UISearchController alloc] initWithSearchResultsController:nil];
     _searchController.searchBar.placeholder = @"请输入美文所包含单词";

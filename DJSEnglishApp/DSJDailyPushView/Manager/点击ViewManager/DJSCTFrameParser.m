@@ -50,17 +50,6 @@
 + (NSAttributedString *)parseAttributedContentWithoutNSDictionaryButConfig:(DJSCTFrameParserConfig *)config
 {
     NSMutableDictionary * attributes = [self attributesWithConfig:config];
-    
-    //设置字体大小
-    //    CGFloat fontSize = [dict[@"size"] floatValue];
-    //    if (fontSize > 0) {
-    //        CTFontRef fontRef = CTFontCreateWithName((CFStringRef)@"ArialMT", fontSize, NULL);
-    //        attributes[(id)kCTFontAttributeName] = (__bridge id)fontRef;
-    //        CFRelease(fontRef);
-    //    }
-    //配置文字
-    //    NSString *content = dict[@"content"];
-    //    NSAttributedString *attString = [[NSAttributedString alloc] initWithString:content attributes:attributes];
     NSAttributedString * attString1 = [[NSAttributedString alloc] initWithString:@"Absence to love is what wind is to fire. It extinguishes the small; it inflames the great. (Roger de Bussy-Rabutin, French writer"];
     NSDictionary * attDictionary2 = @{NSFontAttributeName:[UIFont systemFontOfSize:20]};
     NSAttributedString * attString2 = [[NSAttributedString alloc] initWithString:@"Absence to love is what wind is to fire. It extinguishes the small; it inflames the great. (Roger de Bussy-Rabutin, French writer" attributes:attDictionary2];
@@ -128,7 +117,6 @@
     DJSCoreTextData *data = [[DJSCoreTextData alloc] init];
     data.ctFrame = ctFrame;
     data.height = textHeight;
-    
     
     //释放内存
     CFRelease(ctFrame);

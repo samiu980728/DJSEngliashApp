@@ -34,10 +34,6 @@
         make.edges.equalTo(self);
     }];
     
-//    self.cancelButton.layer.cornerRadius = 30;
-//    self.cancelButton.layer.masksToBounds = YES;
-//    self.cancelButton.layer.borderWidth = 3.0;
-    
     [self.cancelButton setImage:[UIImage imageNamed:@"1.png"] forState:UIControlStateNormal];
     [self.cancelButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(self.mas_top).offset(30);
