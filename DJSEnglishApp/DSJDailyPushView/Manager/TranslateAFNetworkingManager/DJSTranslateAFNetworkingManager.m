@@ -43,6 +43,8 @@ static DJSTranslateAFNetworkingManager * manager = nil;
                            @"type":@"JSON"
                            };
     [manager GET:urlString parameters:dict progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        
+        if (![[NSString stringWithFormat:@"%@", [responseObject objectForKey:@"basic"]] isEqualToString:@"<null>"]) {
         NSArray * resArray = [[responseObject objectForKey:@"basic"] objectForKey:@"explains"];
         NSString * phoneticString = [[responseObject objectForKey:@"basic"] objectForKey:@"us-phonetic"];
         //运用块传值！！！
@@ -50,7 +52,14 @@ static DJSTranslateAFNetworkingManager * manager = nil;
         translateModel.translateArray = [[NSArray alloc] init];
         translateModel.translateArray = resArray;
         translateModel.phoneticString = phoneticString;
+        
         succeedBlock(translateModel);
+        } else {
+            DJSTranslateAFNetworkingModel * translateModel = [[DJSTranslateAFNetworkingModel alloc] init];
+            translateModel.failureString = @"没有查找到该单词";
+            succeedBlock(translateModel);
+        }
+        
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         if (error) {
             errorBlock(error);

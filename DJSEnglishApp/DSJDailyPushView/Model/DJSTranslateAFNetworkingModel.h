@@ -13,6 +13,8 @@
 @property (nonatomic, copy) NSArray * translateArray;
 
 @property (nonatomic, copy) NSString * phoneticString;
+
+@property (nonatomic, copy) NSString * failureString;
 - (void)getTranslateNetworkingWithString:(NSString *)input;
 
 @end

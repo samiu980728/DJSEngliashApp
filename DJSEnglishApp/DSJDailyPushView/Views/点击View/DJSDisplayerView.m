@@ -45,13 +45,12 @@
 #pragma mark Request 新需求:想点击不同的文字 出现的弹窗上
         DJSShowTranslateView * translateView = [[DJSShowTranslateView alloc] init];
         translateView.tag = 100;
-
         translateView.backgroundColor = [UIColor whiteColor];
-        [translateView showTranslateMessageWithString:@"salt"];
-#pragma mark attention 现在的问题是网络请求的确成功了 但是label上显示不出来 很奇怪    奥懂了 延迟函数不应该在这里用   应该在 label.text = xxx 用！！！！
-            NSString * string = translateView.translateLabel.text;
-            translateView.translateLabel.text = string;
-            [self addSubview:translateView];
+        [translateView showTranslateMessageWithString:linkData.urlString];
+//        [translateView showTranslateMessageWithString:@"salt"];
+        NSString * string = translateView.translateLabel.text;
+        translateView.translateLabel.text = string;
+        [self addSubview:translateView];
         
         //弹出视图动画
         [UIView animateWithDuration:0.15 animations:^{
@@ -65,6 +64,7 @@
             make.bottom.mas_equalTo(superView.mas_bottom);
             make.height.mas_equalTo(200);
             make.width.mas_equalTo(superView.mas_width);
+            make.left.mas_equalTo(superView.mas_left);
         }];
         
 #pragma mark Request 为视图的左上角 右上角加圆角
@@ -77,8 +77,8 @@
         maskLayer.path = maskPath.CGPath;
         translateView.layer.mask = maskLayer;
         
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"提示" message:linkData.urlString delegate:nil cancelButtonTitle:@"OK222" otherButtonTitles:nil];
-        [alert show];
+//        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"提示" message:linkData.urlString delegate:nil cancelButtonTitle:@"OK222" otherButtonTitles:nil];
+//        [alert show];
         return;
     }
 }

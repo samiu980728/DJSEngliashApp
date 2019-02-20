@@ -70,7 +70,6 @@
             NSRange range;
             NSMutableArray * urlMutArray = [[NSMutableArray alloc] init];
             for (int i = 0; i < urlStr.length; i += range.length) {
-                unichar chara = [urlStr characterAtIndex:i];
                 range = [urlStr rangeOfComposedCharacterSequenceAtIndex:i];
                 NSString * subStr = [urlStr substringWithRange:range];
                 //NSLog(@"subStr = %@ NSStringFromRange(range) = %@",subStr,NSStringFromRange(range));
@@ -127,7 +126,6 @@
                     }
                 }
                 NSLog(@"finalRealStr = %@",finalRealStr);
-            NSString * realStr = [urlStr substringFromIndex:idx];
             linkData.urlString = finalRealStr;
             }
             break;
