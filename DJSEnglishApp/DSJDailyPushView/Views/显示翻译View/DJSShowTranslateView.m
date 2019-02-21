@@ -14,11 +14,18 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
+        _phoneticReplytoSize = 0;
+        _nameLabelReplytoSize = 0;
+        _nMeanLabelReplytoSize = 0;
+        _adjMeanLabelReplytoSize = 0;
+        _nLabelFloat = 0;
+        _adjLabelFloat = 0;
         self.ifFetchMessageSucceed = NO;
         self.translateLabel = [[UILabel alloc] init];
         self.translateLabel.backgroundColor = [UIColor yellowColor];
         //[self addSubview:self.translateLabel];
         self.englishNameLabel = [[UILabel alloc] init];
+//        self.englishNameLabel.adjustsFontSizeToFitWidth = true;
         [self addSubview:self.englishNameLabel];
         self.phoneticSymbolLabel = [[UILabel alloc] init];
         [self addSubview:self.phoneticSymbolLabel];
@@ -43,12 +50,15 @@
     
     self.englishNameLabel.numberOfLines = 0;
     self.englishNameLabel.font = [UIFont systemFontOfSize:25];
+//    self.englishNameLabel.adjustsFontSizeToFitWidth = true;
     [self.englishNameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(self.mas_left).offset(20);
         make.top.mas_equalTo(self.mas_top).offset(20);
         make.height.mas_equalTo(30);
         make.width.mas_equalTo(_nameLabelReplytoSize);
     }];
+    self.englishNameLabel.adjustsFontSizeToFitWidth = true;
+    NSLog(@"原来的_nameLabelReplytoSize = %f",_nameLabelReplytoSize);
     
     self.phoneticSymbolLabel.numberOfLines = 0;
     self.phoneticSymbolLabel.font = [UIFont systemFontOfSize:20];
@@ -70,11 +80,12 @@
     
     self.adjMeanLabel.numberOfLines = 0;
     self.adjMeanLabel.font = [UIFont systemFontOfSize:20];
+    CGFloat adjMeanHeight = ceil(self.adjMeanLabelReplytoSize) + 1;
     [self.adjMeanLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.equalTo(self.englishNameLabel.mas_left);
         make.top.equalTo(self.meanLabel.mas_bottom).offset(10);
         make.width.mas_equalTo(300);
-        make.height.mas_equalTo(self.adjMeanLabelReplytoSize+10);
+        make.height.mas_equalTo(adjMeanHeight);
     }];
     NSLog(@"self.englishNameLabel.font = %@",self.englishNameLabel.font);
 }
@@ -91,7 +102,7 @@
         NSArray * translateMessageArray = translateModel.translateArray;
         NSString * translteString = translateMessageArray[0];
         NSString * adjTranslateString = [[NSString alloc] init];
-        if (translateMessageArray.count == 2){
+        if (translateMessageArray.count >= 2){
         adjTranslateString = translateMessageArray[1];
         }
         NSLog(@"translteString = %@",translteString);
@@ -121,46 +132,69 @@
         NSString * translteString = translateMessageArray[0];
         NSString * adjTranslateString = translateMessageArray[1];
         NSLog(@"translteString---- = %@",translteString);
-        //[self caculateLabelHeightWithTranslateString:translteString andHeightSize:self.nMeanLabelReplytoSize];
+            
+//            self.englishNameLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+            self.englishNameLabel.text = inputString;
+            self.phoneticSymbolLabel.text = _translateModel.phoneticString;
         self.meanLabel.text = translteString;
-        //[self caculateLabelHeightWithTranslateString:adjTranslateString andHeightSize:self.adjMeanLabelReplytoSize];
         self.adjMeanLabel.text = adjTranslateString;
 #pragma mark Request 宽度的计算还是有问题  其他还好
         self.englishNameLabel.numberOfLines = 0;
         self.englishNameLabel.font = [UIFont systemFontOfSize:25];
-        [self.englishNameLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
-            make.left.mas_equalTo(self.superview.mas_left).offset(20);
+            //self.englishNameLabel.adjustsFontSizeToFitWidth = true;
+            NSLog(@"第二次布局时_nameLabelReplytoSize = %f _phoneticReplytoSize = %f",_nameLabelReplytoSize,_phoneticReplytoSize);
+            CGFloat width = (ceil)(_nameLabelReplytoSize) + 1;
+            NSLog(@"111width = %f",width);
+            self.englishNameLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+        [self.englishNameLabel mas_updateConstraints:^(MASConstraintMaker *make) {
+            make.left.mas_equalTo(self.mas_left).offset(20);
             make.top.mas_equalTo(self.mas_top).offset(20);
             make.height.mas_equalTo(30);
-            make.width.mas_equalTo(_nameLabelReplytoSize+10);
+//            make.width.mas_equalTo(_nameLabelReplytoSize);
+            make.width.mas_equalTo(width);
         }];
+           // self.englishNameLabel.adjustsFontSizeToFitWidth = true;
+            dispatch_time_t time1 = dispatch_time(DISPATCH_TIME_NOW, (ino64_t)(3.0 * NSEC_PER_SEC));
+            dispatch_after(time1, dispatch_get_main_queue(), ^{
+                NSLog(@"self.englishNameLabel.mas_width = %f",self.englishNameLabel.frame.size.width);
+            });
             
         self.phoneticSymbolLabel.numberOfLines = 0;
         self.phoneticSymbolLabel.font = [UIFont systemFontOfSize:20];
+            CGFloat phoneticWidth = ceil(self.phoneticReplytoSize) + 1;
         [self.phoneticSymbolLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
             make.left.mas_equalTo(self.englishNameLabel.mas_right).offset(20);
             make.top.mas_equalTo(self.englishNameLabel.mas_top).offset(5);
-            make.height.mas_equalTo(21);
-            make.width.mas_equalTo(_phoneticReplytoSize);
+            make.height.mas_equalTo(20);
+//            make.width.mas_equalTo(_phoneticReplytoSize);
+            make.width.mas_equalTo(phoneticWidth);
         }];
         
 #pragma mark Request 动态计算宽度！！！ 不用吧
         self.meanLabel.numberOfLines = 0;
         self.meanLabel.font = [UIFont systemFontOfSize:20];
+            CGFloat meadHeight = ceil(self.nMeanLabelReplytoSize) + 1;
         [self.meanLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
             make.left.mas_equalTo(self.englishNameLabel.mas_left);
             make.top.mas_equalTo(self.englishNameLabel.mas_bottom).offset(10);
             make.width.mas_equalTo(300);
-            make.height.mas_equalTo(self.nMeanLabelReplytoSize+10);
+//            make.height.mas_equalTo(self.nMeanLabelReplytoSize+10);
+            make.height.mas_equalTo(meadHeight);
         }];
         
         self.adjMeanLabel.numberOfLines = 0;
+//            self.adjMeanLabel.lineBreakMode = NSLineBreakByWordWrapping;
+//        self.adjMeanLabel.adjustsFontSizeToFitWidth = true;
         self.adjMeanLabel.font = [UIFont systemFontOfSize:20];
+            CGFloat adjMeanHeight = ceil(self.adjMeanLabelReplytoSize) + 1;
+            NSLog(@"adjMeanHeight = %f",adjMeanHeight);
+            NSLog(@"self.adjMeanLabel.font = %@",self.adjMeanLabel.font);
         [self.adjMeanLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
             make.left.mas_equalTo(self.englishNameLabel.mas_left);
             make.top.mas_equalTo(self.meanLabel.mas_bottom).offset(10);
             make.width.mas_equalTo(300);
-            make.height.mas_equalTo(self.adjMeanLabelReplytoSize+20);
+//            make.height.mas_equalTo(self.adjMeanLabelReplytoSize+20);
+            make.height.mas_equalTo(adjMeanHeight);
         }];
         
         }
@@ -175,16 +209,13 @@
     
     _nLabelFloat = [translateString boundingRectWithSize:CGSizeMake(300, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName:[UIFont systemFontOfSize:20]} context:nil].size.height;
     
-    _adjLabelFloat = [translateString boundingRectWithSize:CGSizeMake(300, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName:[UIFont systemFontOfSize:20]} context:nil].size.height;
+    _adjLabelFloat = [translateString boundingRectWithSize:CGSizeMake(300, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading attributes:@{NSFontAttributeName:[UIFont systemFontOfSize:20]} context:nil].size.height;
     NSLog(@"这里的_nLabelFloat = %f _adjLabelFloat = %f",_nLabelFloat,_adjLabelFloat);
 }
 
 - (void)caculateLabelHeightWithNameString:(NSString *)nameString
 {
-    CGSize size = [nameString sizeWithAttributes:[NSDictionary dictionaryWithObjectsAndKeys:[UIFont systemFontOfSize:25],NSFontAttributeName,nil]];
-    self.nameLabelReplytoSize = size.width;
-    NSLog(@"之前的self.nameLabelReplytoSize = %f",_nameLabelReplytoSize);
-    self.nameLabelReplytoSize = [nameString boundingRectWithSize:CGSizeMake(326, 25) options:NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName:[UIFont systemFontOfSize:25]} context:nil].size.width;
+    self.nameLabelReplytoSize = [nameString boundingRectWithSize:CGSizeMake(326, 30) options:NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName:[UIFont systemFontOfSize:25]} context:nil].size.width;
     NSLog(@"self.nameLabelReplytoSize = %f",_nameLabelReplytoSize);
 }
 
