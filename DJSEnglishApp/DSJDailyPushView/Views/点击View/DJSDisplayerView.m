@@ -11,6 +11,8 @@
 #import "DJSCoreTextLinkData.h"
 #import "DJSShowTranslateView.h"
 #import <Masonry.h>
+#import "DJSDecorateView.h"
+
 @implementation DJSDisplayerView
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -76,6 +78,15 @@
         maskLayer.frame = translateView.bounds;
         maskLayer.path = maskPath.CGPath;
         translateView.layer.mask = maskLayer;
+        
+        DJSDecorateView * decorateView = [[DJSDecorateView alloc] init];
+        [translateView addSubview:decorateView];
+        [decorateView mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.top.mas_equalTo(translateView.mas_top);
+            make.height.mas_equalTo(24);
+            make.left.mas_equalTo(translateView.mas_left);
+            make.right.mas_equalTo(translateView.mas_right);
+        }];
         
 //        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"提示" message:linkData.urlString delegate:nil cancelButtonTitle:@"OK222" otherButtonTitles:nil];
 //        [alert show];

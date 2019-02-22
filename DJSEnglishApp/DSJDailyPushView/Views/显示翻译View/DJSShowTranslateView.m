@@ -49,8 +49,8 @@
 //    }];
     
     self.englishNameLabel.numberOfLines = 0;
-    self.englishNameLabel.font = [UIFont systemFontOfSize:25];
-//    self.englishNameLabel.adjustsFontSizeToFitWidth = true;
+    self.englishNameLabel.font = [UIFont fontWithName:@"Arial-BoldMT" size:25];
+    self.englishNameLabel.textColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"3.jpeg"]];
     [self.englishNameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(self.mas_left).offset(20);
         make.top.mas_equalTo(self.mas_top).offset(20);
@@ -115,7 +115,8 @@
         
         [self caculateLabelHeightWithPhoneticString:translateModel.phoneticString];
         [self caculateLabelHeightWithTranslateString:translteString andHeightSize:_nLabelFloat];
-        [self caculateLabelHeightWithTranslateString:adjTranslateString andHeightSize:_adjLabelFloat];
+        [self caculateLabelHeightWithAdjTranslateString:adjTranslateString andHeightSize:_adjLabelFloat];
+//        [self caculateLabelHeightWithTranslateString:adjTranslateString andHeightSize:_adjLabelFloat];
         NSLog(@"_nMeanLabelReplytoSize = %f _adjMeanLabelReplytoSize = %f",_nMeanLabelReplytoSize,_adjMeanLabelReplytoSize);
         }
     } error:^(NSError *error) {
@@ -133,19 +134,16 @@
         NSString * adjTranslateString = translateMessageArray[1];
         NSLog(@"translteString---- = %@",translteString);
             
-//            self.englishNameLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-            self.englishNameLabel.text = inputString;
-            self.phoneticSymbolLabel.text = _translateModel.phoneticString;
+        self.englishNameLabel.text = inputString;
+        self.phoneticSymbolLabel.text = _translateModel.phoneticString;
         self.meanLabel.text = translteString;
         self.adjMeanLabel.text = adjTranslateString;
 #pragma mark Request 宽度的计算还是有问题  其他还好
         self.englishNameLabel.numberOfLines = 0;
-        self.englishNameLabel.font = [UIFont systemFontOfSize:25];
-            //self.englishNameLabel.adjustsFontSizeToFitWidth = true;
-            NSLog(@"第二次布局时_nameLabelReplytoSize = %f _phoneticReplytoSize = %f",_nameLabelReplytoSize,_phoneticReplytoSize);
-            CGFloat width = (ceil)(_nameLabelReplytoSize) + 1;
-            NSLog(@"111width = %f",width);
-            self.englishNameLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+        self.englishNameLabel.font = [UIFont fontWithName:@"Arial-BoldMT" size:25];
+        self.englishNameLabel.textColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"3.jpeg"]];
+        CGFloat width = (ceil)(_nameLabelReplytoSize) + 1;
+        self.englishNameLabel.lineBreakMode = NSLineBreakByTruncatingTail;
         [self.englishNameLabel mas_updateConstraints:^(MASConstraintMaker *make) {
             make.left.mas_equalTo(self.mas_left).offset(20);
             make.top.mas_equalTo(self.mas_top).offset(20);
@@ -209,9 +207,15 @@
     
     _nLabelFloat = [translateString boundingRectWithSize:CGSizeMake(300, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName:[UIFont systemFontOfSize:20]} context:nil].size.height;
     
-    _adjLabelFloat = [translateString boundingRectWithSize:CGSizeMake(300, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading attributes:@{NSFontAttributeName:[UIFont systemFontOfSize:20]} context:nil].size.height;
+//    _adjLabelFloat = [translateString boundingRectWithSize:CGSizeMake(300, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading attributes:@{NSFontAttributeName:[UIFont systemFontOfSize:20]} context:nil].size.height;
     NSLog(@"这里的_nLabelFloat = %f _adjLabelFloat = %f",_nLabelFloat,_adjLabelFloat);
 }
+
+- (void)caculateLabelHeightWithAdjTranslateString:(NSString *)translateString andHeightSize:(CGFloat)heightSizeFloat
+{
+    _adjLabelFloat = [translateString boundingRectWithSize:CGSizeMake(300, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading attributes:@{NSFontAttributeName:[UIFont systemFontOfSize:20]} context:nil].size.height;
+}
+
 
 - (void)caculateLabelHeightWithNameString:(NSString *)nameString
 {
