@@ -23,6 +23,8 @@
 
 @property (nonatomic, strong) UILabel * adjMeanLabel;
 
+@property (nonatomic, strong) UILabel * failureLabel;
+
 @property (nonatomic, assign) CGFloat phoneticReplytoSize;
 
 @property (nonatomic, assign) CGFloat nameLabelReplytoSize;

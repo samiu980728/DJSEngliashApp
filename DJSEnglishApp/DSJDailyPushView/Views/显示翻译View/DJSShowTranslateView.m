@@ -35,6 +35,8 @@
         [self addSubview:self.meanLabel];
         self.adjMeanLabel = [[UILabel alloc] init];
         [self addSubview:self.adjMeanLabel];
+        self.failureLabel = [[UILabel alloc] init];
+        [self addSubview:self.failureLabel];
     }
     return self;
 }
@@ -96,6 +98,7 @@
     [self caculateLabelHeightWithNameString:inputString];
     DJSTranslateAFNetworkingManager * translateManager = [DJSTranslateAFNetworkingManager sharedManager];
     [translateManager fetchDataWithTranslateAFNetworkingModelAndString:inputString Succeed:^(DJSTranslateAFNetworkingModel *translateModel) {
+        if (![translateModel.failureString isEqualToString:@"没有查找到该单词"]) {
     if ([translateModel.translateArray isKindOfClass:[NSArray class]] && translateModel.translateArray.count > 0) {
         _ifFetchMessageSucceed = YES;
         _translateModel = translateModel;
@@ -119,7 +122,12 @@
 //        [self caculateLabelHeightWithTranslateString:adjTranslateString andHeightSize:_adjLabelFloat];
         NSLog(@"_nMeanLabelReplytoSize = %f _adjMeanLabelReplytoSize = %f",_nMeanLabelReplytoSize,_adjMeanLabelReplytoSize);
         }
-    } error:^(NSError *error) {
+        } else {
+            NSString * failureString = [[NSString alloc] init];
+            failureString = translateModel.failureString;
+            self.failureLabel.text = failureString;
+        }
+     }error:^(NSError *error) {
         NSLog(@"error --- %@",error);
     }];
     
@@ -131,7 +139,10 @@
         _adjMeanLabelReplytoSize = _adjLabelFloat;
         NSArray * translateMessageArray = _translateModel.translateArray;
         NSString * translteString = translateMessageArray[0];
-        NSString * adjTranslateString = translateMessageArray[1];
+            NSString * adjTranslateString = [[NSString alloc] init];
+            if (translateMessageArray.count >= 2){
+                 adjTranslateString = translateMessageArray[1];
+            }
         NSLog(@"translteString---- = %@",translteString);
             
         self.englishNameLabel.text = inputString;
@@ -191,10 +202,22 @@
             make.left.mas_equalTo(self.englishNameLabel.mas_left);
             make.top.mas_equalTo(self.meanLabel.mas_bottom).offset(10);
             make.width.mas_equalTo(300);
-//            make.height.mas_equalTo(self.adjMeanLabelReplytoSize+20);
             make.height.mas_equalTo(adjMeanHeight);
         }];
         
+        } else {
+            self.failureLabel.numberOfLines = 0;
+            NSString * str = self.failureLabel.text;
+            self.failureLabel.font = [UIFont fontWithName:@"Baskerville-BoldItalic" size:20];
+//            self.failureLabel.font = [UIFont systemFontOfSize:20];
+            NSLog(@"strrr = %@",str);
+            [self.failureLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+                make.centerX.mas_equalTo(0);
+                make.top.mas_equalTo(self.mas_top).offset(80);
+//                make.left.mas_equalTo(self.mas_left).offset(150);
+                make.width.mas_equalTo(200);
+                make.height.mas_equalTo(25);
+            }];
         }
     });
     
