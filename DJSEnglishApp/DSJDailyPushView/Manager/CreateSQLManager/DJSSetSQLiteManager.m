@@ -45,4 +45,44 @@ static DJSSetSQLiteManager * manager = nil;
     }
 }
 
+- (void)insertArticleWith:(NSString *)articleStr ToDataBase:(FMDatabase *)dataBase andName:(NSString *)tableNameStr
+{
+    [dataBase open];
+    NSString * sql = [NSString stringWithFormat:@"insert into %@ (articleText) values(?) ",tableNameStr];
+    BOOL insertArticleSQLDataBaseResult = NO;
+    insertArticleSQLDataBaseResult = [dataBase executeUpdate:sql, articleStr];
+    if (!insertArticleSQLDataBaseResult) {
+        NSLog(@"传值失败");
+    } else {
+        NSLog(@"传值成功");
+    }
+    [dataBase close];
+}
+
+- (void)openArticleDataBaseWith:(FMDatabase *)dataBase andTableName:(NSString *)tableNameStr CaughtInatricleMutArray :(NSMutableArray *)articleMutArray
+{
+    if ([dataBase open]) {
+        FMResultSet * getRes = [dataBase executeQuery:[NSString stringWithFormat:@"SELECT * FROM %@",tableNameStr]];
+        while ([getRes next]) {
+            NSString * articleStr = [NSString stringWithFormat:@"%@",[getRes stringForColumnIndex:1]];
+            [articleMutArray addObject:articleStr];
+        }
+    }
+    [dataBase close];
+}
+
+- (void)deleteArticleSQLDataBaseWith:(FMDatabase *)dataBase andTableName:(NSString *)tableNameStr
+{
+    if ([dataBase open]) {
+        NSString * sql = [NSString stringWithFormat:@"delete from %@",tableNameStr];
+        BOOL res = [dataBase executeUpdate:sql];
+        if (!res) {
+            NSLog(@"error to delete db data");
+        } else{
+            NSLog(@"succ to deleta db data");
+        }
+        [dataBase close];
+    }
+}
+
 @end

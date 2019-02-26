@@ -15,5 +15,12 @@
 ///创建数据库
 - (void)createFMDBDataSourceWithSQLName:(NSString *)sqlName;
 
+- (void)insertArticleWith:(NSString *)articleStr ToDataBase:(FMDatabase *)dataBase andName:(NSString *)tableNameStr;
+
+- (void)openArticleDataBaseWith:(FMDatabase *)dataBase andTableName:(NSString *)tableNameStr CaughtInatricleMutArray:(NSMutableArray *)articleMutArray;
+
+- (void)deleteArticleSQLDataBaseWith:(FMDatabase *)dataBase andTableName:(NSString *)tableNameStr;
+
 @property (nonatomic, strong) FMDatabase * articleSqlDataBase;
+
 @end
